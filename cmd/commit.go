@@ -4,6 +4,9 @@ Copyright © 2025 raashed
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/rshdhere/vibecheck/git"
 	"github.com/spf13/cobra"
 )
 
@@ -12,6 +15,15 @@ var commitCmd = &cobra.Command{
 	Use:   "commit",
 	Short: "A command-line tool for easing git commit messages for me(or may be you guys too lol)",
 	Long:  `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like Ollama, GPT-5, Sonnet-4.5, Qwen-3 etc`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		res, err := git.StagedDiff(cmd.Context())
+		if err != nil {
+			return fmt.Errorf("staged changes: %w", err)
+		}
+		fmt.Println("result:", res)
+
+		return nil
+	},
 }
 
 func init() {
