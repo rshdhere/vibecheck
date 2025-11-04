@@ -1,28 +1,17 @@
 /*
 Copyright © 2025 raashed
-
 */
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
 	Use:   "commit",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("commit called")
-	},
+	Short: "A command-line tool for easing git commit messages for me(or may be you guys too lol)",
+	Long:  `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like Ollama, GPT-5, Sonnet-4.5, Qwen-3 etc`,
 }
 
 func init() {

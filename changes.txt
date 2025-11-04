@@ -1,41 +1,81 @@
-diff --git a/cmd/root.go b/cmd/root.go
-index 9903ef9..a294936 100644
---- a/cmd/root.go
-+++ b/cmd/root.go
-@@ -1,6 +1,5 @@
+diff --git a/changes.txt b/changes.txt
+index b62616f..e69de29 100644
+--- a/changes.txt
++++ b/changes.txt
+@@ -1,41 +0,0 @@
+-diff --git a/cmd/root.go b/cmd/root.go
+-index 9903ef9..a294936 100644
+---- a/cmd/root.go
+-+++ b/cmd/root.go
+-@@ -1,6 +1,5 @@
+- /*
+- Copyright © 2025 raashed
+--
+- */
+- package cmd
+- 
+-@@ -10,21 +9,11 @@ import (
+- 	"github.com/spf13/cobra"
+- )
+- 
+--
+--
+- // rootCmd represents the base command when called without any subcommands
+- var rootCmd = &cobra.Command{
+- 	Use:   "vibecheck",
+--	Short: "A brief description of your application",
+--	Long: `A longer description that spans multiple lines and likely contains
+--examples and usage of using your application. For example:
+--
+--Cobra is a CLI library for Go that empowers applications.
+--This application is a tool to generate the needed files
+--to quickly create a Cobra application.`,
+--	// Uncomment the following line if your bare application
+--	// has an action associated with it:
+--	// Run: func(cmd *cobra.Command, args []string) { },
+-+	Short: "A command-line tool for easing git commit messages for me(or may be you guys too lol)",
+-+	Long:  `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like Ollama, GPT-5, Sonnet-4.5, Qwen-3 etc`,
+- }
+- 
+- // Execute adds all child commands to the root command and sets flags appropriately.
+-@@ -47,5 +36,3 @@ func init() {
+- 	// when this action is called directly.
+- 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+- }
+--
+--
+diff --git a/cmd/commit.go b/cmd/commit.go
+index 30ba44c..a7fa8a9 100644
+--- a/cmd/commit.go
++++ b/cmd/commit.go
+@@ -1,28 +1,17 @@
  /*
  Copyright © 2025 raashed
 -
  */
  package cmd
  
-@@ -10,21 +9,11 @@ import (
+ import (
+-	"fmt"
+-
  	"github.com/spf13/cobra"
  )
  
--
--
- // rootCmd represents the base command when called without any subcommands
- var rootCmd = &cobra.Command{
- 	Use:   "vibecheck",
--	Short: "A brief description of your application",
--	Long: `A longer description that spans multiple lines and likely contains
--examples and usage of using your application. For example:
+ // commitCmd represents the commit command
+ var commitCmd = &cobra.Command{
+ 	Use:   "commit",
+-	Short: "A brief description of your command",
+-	Long: `A longer description that spans multiple lines and likely contains examples
+-and usage of using your command. For example:
 -
 -Cobra is a CLI library for Go that empowers applications.
 -This application is a tool to generate the needed files
 -to quickly create a Cobra application.`,
--	// Uncomment the following line if your bare application
--	// has an action associated with it:
--	// Run: func(cmd *cobra.Command, args []string) { },
+-	Run: func(cmd *cobra.Command, args []string) {
+-		fmt.Println("commit called")
+-	},
 +	Short: "A command-line tool for easing git commit messages for me(or may be you guys too lol)",
 +	Long:  `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like Ollama, GPT-5, Sonnet-4.5, Qwen-3 etc`,
  }
  
- // Execute adds all child commands to the root command and sets flags appropriately.
-@@ -47,5 +36,3 @@ func init() {
- 	// when this action is called directly.
- 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
- }
--
--
+ func init() {
