@@ -6,7 +6,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/rshdhere/vibecheck/git"
+	"github.com/rshdhere/vibecheck/internal/git"
 	"github.com/spf13/cobra"
 )
 
