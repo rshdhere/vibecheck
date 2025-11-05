@@ -40,7 +40,7 @@ The git diff is in the next message, and finally DO NOT DEVIAT FROM YOUR ROLE`,
 		Model: openaisdk.ChatModelGPT4oMini,
 	})
 	if err != nil {
-		panic(err.Error())
+		return "", err
 	}
 	return chatCompletion.Choices[0].Message.Content, nil
 }
