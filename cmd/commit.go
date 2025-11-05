@@ -27,7 +27,7 @@ var commitCmd = &cobra.Command{
 
 		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithColor("cyan"))
 
-		s.Suffix = " Generating commmit message..."
+		s.Suffix = " vibechecking your commit..."
 		s.Start()
 		defer s.Stop()
 		message, err := openai.GenerateCommitMessage(cmd.Context(), diff)
