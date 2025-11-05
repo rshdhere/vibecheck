@@ -25,9 +25,9 @@ var commitCmd = &cobra.Command{
 			return fmt.Errorf("staged changes: %w", err)
 		}
 
-		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithColor("cyan"))
 
-		s.Suffix = " Generating commmit message"
+		s.Suffix = " Generating commmit message..."
 		s.Start()
 		defer s.Stop()
 		message, err := ollama.GenerateGitCommit(cmd.Context(), diff)
