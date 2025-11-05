@@ -23,12 +23,14 @@ var commitCmd = &cobra.Command{
 			return fmt.Errorf("staged changes: %w", err)
 		}
 
-		res, err := ollama.GenerateGitCommit(cmd.Context(), diff)
+		message, err := ollama.GenerateGitCommit(cmd.Context(), diff)
 		if err != nil {
 			return fmt.Errorf("generated commit message: %w", err)
 		}
 
-		fmt.Println(res)
+		if err := git.CommitWMessage(cmd.Context(), message); err != nil {
+			return fmt.Errorf("commit with message: %w", err)
+		}
 		return nil
 	},
 }
