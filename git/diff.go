@@ -1,4 +1,4 @@
-// Package git responsible to take in the git diff of the staged files to provide our AI models
+// Package git is responsible for actually retrieving the git-diff
 package git
 
 import (

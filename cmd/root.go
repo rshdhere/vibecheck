@@ -1,3 +1,4 @@
+// Package cmd is provided by cobra-cli to ship command-line tools faster
 /*
 Copyright © 2025 raashed
 */
