@@ -6,7 +6,9 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/rshdhere/vibecheck/internal/git"
 	"github.com/rshdhere/vibecheck/internal/llm/ollama"
 	"github.com/spf13/cobra"
@@ -23,10 +25,14 @@ var commitCmd = &cobra.Command{
 			return fmt.Errorf("staged changes: %w", err)
 		}
 
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+		s.Start()
+		defer s.Stop()
 		message, err := ollama.GenerateGitCommit(cmd.Context(), diff)
 		if err != nil {
 			return fmt.Errorf("generated commit message: %w", err)
 		}
+		s.Stop()
 
 		if err := git.CommitWMessage(cmd.Context(), message); err != nil {
 			return fmt.Errorf("commit with message: %w", err)
