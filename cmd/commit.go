@@ -26,6 +26,8 @@ var commitCmd = &cobra.Command{
 		}
 
 		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond)
+
+		s.Suffix = " Generating commmit message"
 		s.Start()
 		defer s.Stop()
 		message, err := ollama.GenerateGitCommit(cmd.Context(), diff)
