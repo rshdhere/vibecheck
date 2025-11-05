@@ -10,7 +10,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/rshdhere/vibecheck/internal/git"
-	"github.com/rshdhere/vibecheck/internal/llm/ollama"
+	"github.com/rshdhere/vibecheck/internal/llm/openai"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +30,7 @@ var commitCmd = &cobra.Command{
 		s.Suffix = " Generating commmit message..."
 		s.Start()
 		defer s.Stop()
-		message, err := ollama.GenerateGitCommit(cmd.Context(), diff)
+		message, err := openai.GenerateCommitMessage(cmd.Context(), diff)
 		if err != nil {
 			return fmt.Errorf("generated commit message: %w", err)
 		}
