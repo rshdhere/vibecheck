@@ -7,6 +7,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+)
+
+type Model = string
+
+const (
+	GitCommitMessage Model = "tavernari/git-commit-message:sp_commit_mini"
 )
 
 type generateRequestBody struct {
@@ -21,9 +28,13 @@ type generateResponseBody struct {
 }
 
 func GenerateGitCommit(ctx context.Context, diff string) (string, error) {
-	url := "http://localhost:11434/api/generate"
+	baseURL, exists := os.LookupEnv("OLLAMA_HOST")
+	if !exists {
+		baseURL = "http://localhost:11434"
+	}
+	url := fmt.Sprintf("%s/api/generate", baseURL)
 	body := generateRequestBody{
-		Model:  "tavernari/git-commit-message:sp_commit_mini",
+		Model:  GitCommitMessage,
 		Prompt: diff,
 		Stream: false,
 		Raw:    false,
