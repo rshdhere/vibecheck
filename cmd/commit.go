@@ -5,18 +5,30 @@ Copyright © 2025 raashed
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/briandowns/spinner"
 	"github.com/rshdhere/vibecheck/internal/git"
+	"github.com/rshdhere/vibecheck/internal/llm/ollama"
 	"github.com/rshdhere/vibecheck/internal/llm/openai"
 	"github.com/spf13/cobra"
 )
 
-const promptFlagName = "prompt"
+const (
+	promptFlagName   = "prompt"
+	providerFlagName = "provider"
+)
 
-// commitCmd represents the commit command
+var providerOptions = []string{
+	"openai",
+	"ollama",
+}
+
+type ProviderFunc func(context.Context, string, string) (string, error)
+
 var commitCmd = &cobra.Command{
 	Use:   "commit",
 	Short: "A command-line tool for easing git commit messages for me(or may be you guys too lol), adding multiple models to it sounds cool right?!",
@@ -32,12 +44,32 @@ var commitCmd = &cobra.Command{
 			return fmt.Errorf("get string prompt flag: %w", err)
 		}
 
+		provider, err := cmd.Flags().GetString(providerFlagName)
+		if err != nil {
+			return fmt.Errorf("get string provider flag: %w", err)
+		}
+
+		var providerFn ProviderFunc = openai.GenerateCommitMessage
+
+		switch provider {
+		case "openai":
+			providerFn = openai.GenerateCommitMessage
+		case "ollama":
+			providerFn = ollama.GenerateGitCommit
+		default:
+			return fmt.Errorf("invalid provider")
+
+		}
 		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithColor("cyan"))
 
 		s.Suffix = " Generating commit message..."
 		s.Start()
 		defer s.Stop()
-		message, err := openai.GenerateCommitMessage(cmd.Context(), diff, additionalPrompt)
+
+		ctx, cancel := context.WithTimeout(cmd.Context(), time.Second*30)
+		defer cancel()
+
+		message, err := providerFn(ctx, diff, additionalPrompt)
 		if err != nil {
 			return fmt.Errorf("generated commit message: %w", err)
 		}
@@ -63,4 +95,5 @@ func init() {
 	// is called directly, e.g.:
 	// commitCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	commitCmd.Flags().String(promptFlagName, "", "used to provide additional context to llm")
+	commitCmd.Flags().String(providerFlagName, "openai", fmt.Sprintf("used to select a particular ai-provider: %v", strings.Join(providerOptions, ",")))
 }
