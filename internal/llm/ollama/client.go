@@ -29,6 +29,8 @@ type generateResponseBody struct {
 	Response string `json:"response"`
 }
 
+// done for 0.2.0
+
 type client struct{}
 
 func init() {
