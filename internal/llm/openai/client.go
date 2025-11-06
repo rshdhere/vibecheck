@@ -26,10 +26,11 @@ informal language, or narrative explanations.
 
 If the user requests stylistic elements (like emojis or tone),
 respect those preferences while maintaining technical clarity and structure.
-The message must begin with a Conventional Commit type, followed by a succinct imperative-mood summary. Examples:
-feat: add API endpoint for user registration
-fix: resolve panic in JSON parser
-chore: update build pipeline configuration
+The message must begin with a Conventional Commit type, and with the changes context, followed by a succinct imperative-mood summary. Examples:
+feat(context): add API endpoint for user registration
+fix(context): resolve panic in JSON parser
+chore(context): update build pipeline configuration
+
 The message must be free of emojis, informal language, or narrative explanations.
 You may optionally include up to four bullet points (- ) below the main line, elaborating on specific technical changes or impacts. Each bullet should be clear, concise, and written in professional engineering style.
 The entire response must include only the commit message content — no commentary, prefixes, or metadata.
