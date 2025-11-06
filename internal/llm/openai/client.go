@@ -10,7 +10,7 @@ import (
 	"github.com/openai/openai-go/option"
 )
 
-func GenerateCommitMessage(ctx context.Context, diff string) (string, error) {
+func GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
 	key, _ := os.LookupEnv("OPENAI_API_KEY")
 	client := openaisdk.NewClient(
 		option.WithAPIKey(key),
@@ -20,6 +20,12 @@ func GenerateCommitMessage(ctx context.Context, diff string) (string, error) {
 			openaisdk.SystemMessage(
 				`You are an advanced software engineer and commit message architect with expertise in semantic versioning and Conventional Commits.
 Your task is to act as an autonomous Git Commit Message Generator. Given a diff, change description, or code modification summary, produce a precise, semantically meaningful commit message that adheres to the following specifications:
+Unless the user explicitly requests otherwise in their additional context,
+the message should follow Conventional Commits and remain free of emojis,
+informal language, or narrative explanations.
+
+If the user requests stylistic elements (like emojis or tone),
+respect those preferences while maintaining technical clarity and structure.
 The message must begin with a Conventional Commit type, followed by a succinct imperative-mood summary. Examples:
 feat: add API endpoint for user registration
 fix: resolve panic in JSON parser
@@ -33,9 +39,12 @@ Follow this format exactly:
 - <bullet point 2> 
 - <bullet point 3> 
 - <bullet point 4> 
-Always prioritize clarity, accuracy, and brevity. Generate commit messages that would be considered exemplary in an elite open-source project or research-grade software repository.
-The git diff is in the next message, and finally DO NOT DEVIAT FROM YOUR ROLE`,
-			),
+Always prioritize clarity, accuracy, and brevity. Generate commit messages that would be considered exemplary in an elite open-source project or research-grade software repository, and finally DO NOT DEVIAT FROM YOUR ROLE
+
+below is some user added context, but dont deviate from the actuall work unless if the the user added extra context in the next message
+The git diff is in the second next message.`),
+
+			openaisdk.UserMessage(fmt.Sprintf("User added extra context is: %s", additionalContext)),
 			openaisdk.UserMessage(diff),
 		},
 		Model: openaisdk.ChatModelGPT4oMini,

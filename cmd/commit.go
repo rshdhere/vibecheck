@@ -14,6 +14,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const promptFlagName = "prompt"
+
 // commitCmd represents the commit command
 var commitCmd = &cobra.Command{
 	Use:   "commit",
@@ -25,12 +27,17 @@ var commitCmd = &cobra.Command{
 			return fmt.Errorf("staged changes: %w", err)
 		}
 
+		additionalPrompt, err := cmd.Flags().GetString(promptFlagName)
+		if err != nil {
+			return fmt.Errorf("get string prompt flag: %w", err)
+		}
+
 		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithColor("cyan"))
 
-		s.Suffix = " vibechecking your commit..."
+		s.Suffix = " Generating commit message..."
 		s.Start()
 		defer s.Stop()
-		message, err := openai.GenerateCommitMessage(cmd.Context(), diff)
+		message, err := openai.GenerateCommitMessage(cmd.Context(), diff, additionalPrompt)
 		if err != nil {
 			return fmt.Errorf("generated commit message: %w", err)
 		}
@@ -55,4 +62,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// commitCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	commitCmd.Flags().String(promptFlagName, "", "used to provide additional context to llm")
 }
