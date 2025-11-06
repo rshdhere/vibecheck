@@ -3,6 +3,7 @@ package openai
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	openaisdk "github.com/openai/openai-go"
@@ -40,7 +41,7 @@ The git diff is in the next message, and finally DO NOT DEVIAT FROM YOUR ROLE`,
 		Model: openaisdk.ChatModelGPT4oMini,
 	})
 	if err != nil {
-		return "", err
+		return fmt.Sprintf("error while prompting to open-ai at: %v", err), err
 	}
 	return chatCompletion.Choices[0].Message.Content, nil
 }
