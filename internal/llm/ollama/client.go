@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
 type Model = string
@@ -27,7 +29,13 @@ type generateResponseBody struct {
 	Response string `json:"response"`
 }
 
-func GenerateGitCommit(ctx context.Context, diff string, additionalContext string) (string, error) {
+type client struct{}
+
+func init() {
+	llm.Register("ollama", &client{})
+}
+
+func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
 	baseURL, exists := os.LookupEnv("OLLAMA_HOST")
 	if !exists {
 		baseURL = "http://localhost:11434"

@@ -8,9 +8,16 @@ import (
 
 	openaisdk "github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
+	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
-func GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
+type client struct{}
+
+func init() {
+	llm.Register("openai", &client{})
+}
+
+func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
 	key, _ := os.LookupEnv("OPENAI_API_KEY")
 	client := openaisdk.NewClient(
 		option.WithAPIKey(key),
