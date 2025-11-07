@@ -28,7 +28,7 @@ type ProviderFunc func(context.Context, string, string) (string, error)
 var commitCmd = &cobra.Command{
 	Use:   "commit",
 	Short: "A command-line tool for easing git commit messages for me(or may be you guys too lol), adding multiple models to it sounds cool right?!",
-	Long:  `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like Ollama, GPT4o-mini`,
+	Long:  `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like Qwen2.5-coder:3b, GPT4o-mini`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		diff, err := git.StagedDiff(cmd.Context())
 		if err != nil {

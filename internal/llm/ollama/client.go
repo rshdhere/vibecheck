@@ -16,8 +16,8 @@ import (
 type Model = string
 
 const (
-	// Using qwen2.5-coder:3b
-	GitCommitMessage Model = "qwen2.5-coder:3b"
+	// Using Mistral 7B with Q4 quantization for optimal performance and accuracy
+	GitCommitMessage Model = "mistral:7b-instruct-q4_K_M"
 )
 
 type generateRequestBody struct {
@@ -56,7 +56,8 @@ Your role is to function as an autonomous Git Commit Message Generator that prod
    - If all detected changes are non-functional, output exactly:  
      chore: non-functional formatting or comment update  
 
-2. Never infer intent beyond observable code changes.  
+2. Never infer intent beyond observable code changes.
+   - Be more accurate on the changes and dont just tell their were spelling updates but go more specific  
    - Derive meaning only from what is explicitly shown in the diff.  
    - When intent is unclear, describe the visible change in neutral, technical terms.  
 
@@ -65,10 +66,13 @@ Your role is to function as an autonomous Git Commit Message Generator that prod
    - Avoid passive voice, filler phrases, or redundant words.  
    - Output must be minimal, direct, and precise.  
 
-4. Enforce structural and stylistic consistency.  
+4. Enforce structural and stylistic consistency.
+   - I see that 'plaintext' word is being printed it shouldnt happen
+   - you're not allowed to use backtick in commit message
    - Follow the Conventional Commit format exactly.  
    - Never include additional commentary, explanations, or markdown.  
    - Do not use emojis, narrative tone, or conversational phrasing.  
+   - never forget to add atleast 3 descriptions for any commit message which should start with a - symbol followed by a space
    - Avoid speculative language such as possibly, likely, or should.  
 
 ---
