@@ -56,7 +56,7 @@ var commitCmd = &cobra.Command{
 		s.Start()
 		defer s.Stop()
 
-		ctx, cancel := context.WithTimeout(cmd.Context(), time.Second*10)
+		ctx, cancel := context.WithTimeout(cmd.Context(), time.Second*45)
 		defer cancel()
 
 		message, err := provider.GenerateCommitMessage(ctx, diff, additionalPrompt)
