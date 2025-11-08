@@ -12,9 +12,11 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -40,21 +42,32 @@ var upgradeCmd = &cobra.Command{
 	Long:    `Automatically downloads and installs the latest version of vibecheck from GitHub releases.`,
 	Version: version,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithColor("cyan"))
-		s.Suffix = " Checking for updates..."
-		s.Start()
-
 		// Get current executable path
 		execPath, err := os.Executable()
 		if err != nil {
-			s.Stop()
 			return fmt.Errorf("failed to get executable path: %w", err)
 		}
 		execPath, err = filepath.EvalSymlinks(execPath)
 		if err != nil {
-			s.Stop()
 			return fmt.Errorf("failed to resolve executable path: %w", err)
 		}
+
+		// Check if we need elevated privileges
+		if !isWritable(filepath.Dir(execPath)) {
+			if runtime.GOOS == "windows" {
+				return fmt.Errorf("insufficient permissions to upgrade. Please run as Administrator")
+			}
+
+			// Check if we're already running with sudo
+			if os.Geteuid() != 0 {
+				fmt.Println("🔐 Elevated privileges required. Re-running with sudo...")
+				return rerunWithSudo()
+			}
+		}
+
+		s := spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithColor("cyan"))
+		s.Suffix = " Checking for updates..."
+		s.Start()
 
 		// Fetch latest release info
 		release, err := fetchLatestRelease()
@@ -378,6 +391,55 @@ func copyFile(src, dst string) error {
 
 	_, err = io.Copy(destination, source)
 	return err
+}
+
+// isWritable checks if the directory is writable by the current user
+func isWritable(dir string) bool {
+	// Try to create a temporary file in the directory
+	testFile := filepath.Join(dir, ".vibecheck-write-test")
+	f, err := os.OpenFile(testFile, os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		return false
+	}
+	f.Close()
+	os.Remove(testFile)
+	return true
+}
+
+// rerunWithSudo re-executes the current command with sudo on Unix-like systems
+func rerunWithSudo() error {
+	if runtime.GOOS == "windows" {
+		return fmt.Errorf("automatic privilege elevation not supported on Windows")
+	}
+
+	// Get the path to sudo
+	sudoPath, err := exec.LookPath("sudo")
+	if err != nil {
+		return fmt.Errorf("sudo not found. Please run: sudo vibecheck upgrade")
+	}
+
+	// Prepare arguments: sudo vibecheck upgrade [original args]
+	args := append([]string{os.Args[0]}, os.Args[1:]...)
+
+	// Execute sudo with the current command
+	cmd := exec.Command(sudoPath, args...)
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		if exitErr, ok := err.(*exec.ExitError); ok {
+			// Preserve the exit code from the sudo command
+			if status, ok := exitErr.Sys().(syscall.WaitStatus); ok {
+				os.Exit(status.ExitStatus())
+			}
+		}
+		return fmt.Errorf("failed to run with sudo: %w", err)
+	}
+
+	// Exit successfully after sudo command completes
+	os.Exit(0)
+	return nil
 }
 
 func init() {

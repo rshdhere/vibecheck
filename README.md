@@ -52,6 +52,9 @@ This will:
 - Check for the latest release from GitHub
 - Download and install the new version automatically
 - Preserve your configuration
+- Automatically request sudo privileges if needed (Linux/macOS)
+
+> **Note:** If vibecheck is installed in a protected directory like `/usr/local/bin`, the upgrade command will automatically re-run itself with sudo to complete the installation.
 
 ## Configuration
 
