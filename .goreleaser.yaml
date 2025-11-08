@@ -21,6 +21,8 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X github.com/rshdhere/vibecheck/cmd.version={{.Version}}
 
 archives:
   - formats: [tar.gz]
