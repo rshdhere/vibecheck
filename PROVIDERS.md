@@ -7,7 +7,7 @@ This document provides detailed information about all supported AI providers in 
 vibecheck supports 9 AI providers, each optimized for cost-efficiency and quality:
 
 1. **OpenAI** - GPT-4o-mini
-2. **Google Gemini** - gemini-1.5-flash
+2. **Google Gemini** - gemini-2.5-flash
 3. **Anthropic** - Claude 3.5 Haiku
 4. **Groq** - Llama 3.3 70B Versatile
 5. **xAI** - Grok Beta
