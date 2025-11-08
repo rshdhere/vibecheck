@@ -3,7 +3,7 @@
 
 # vibecheck
 
-A cross-platform command-line ai-tool for automating git commit messages using AI models. Supports 9 providers including OpenAI, Gemini 2.5, Anthropic Claude, Groq, Grok, Kimi K2, Qwen, DeepSeek, and Ollama.
+A cross-platform command-line ai-tool for automating git commit messages using AI models. Supports 09 providers including OpenAI, Gemini 2.5, Anthropic Claude, Groq, Grok, Kimi K2, Qwen, DeepSeek, and Ollama.
 
 ## Installation
 
