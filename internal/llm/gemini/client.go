@@ -30,7 +30,6 @@ func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additio
 	defer client.Close()
 
 	// Using gemini-2.5-flash for best performance and cost-efficiency
-	// also for testing speed
 	model := client.GenerativeModel("gemini-2.5-flash")
 
 	// Configure model parameters for better responses
