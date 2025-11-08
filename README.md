@@ -3,7 +3,7 @@
 
 # vibecheck
 
-A command-line tool for automating git commit messages using AI models like GPT-4o-mini and gpt-oss:20b (using ollama).
+A command-line tool for automating git commit messages using AI models. Supports multiple providers including OpenAI (GPT-4o-mini), Ollama (gpt-oss:20b), Google Gemini, Anthropic Claude, Groq, and xAI Grok.
 
 ## Installation
 
@@ -53,17 +53,50 @@ This will:
 - Download and install the new version automatically
 - Preserve your configuration
 
+## Configuration
+
+Set up your API keys as environment variables:
+
+```bash
+# OpenAI (GPT-4o-mini)
+export OPENAI_API_KEY="your-openai-api-key"
+
+# Google Gemini (gemini-1.5-flash)
+export GEMINI_API_KEY="your-gemini-api-key"
+
+# Anthropic Claude (claude-3.5-haiku)
+export ANTHROPIC_API_KEY="your-anthropic-api-key"
+
+# Groq (llama-3.3-70b-versatile)
+export GROQ_API_KEY="your-groq-api-key"
+
+# xAI Grok (grok-beta)
+export XAI_API_KEY="your-xai-api-key"
+
+# Ollama (local, no API key needed)
+# Set OLLAMA_HOST if not using default http://localhost:11434
+export OLLAMA_HOST="http://localhost:11434"
+```
+
 ## Usage
 
 ```bash
-# Generate and commit with AI
+# Generate and commit with AI (default: OpenAI)
 vibecheck commit
 
 # Use a specific provider
-vibecheck commit --provider ollama
+vibecheck commit --provider openai    # GPT-4o-mini
+vibecheck commit --provider gemini    # Gemini 1.5 Flash
+vibecheck commit --provider anthropic # Claude 3.5 Haiku
+vibecheck commit --provider groq      # Llama 3.3 70B
+vibecheck commit --provider grok      # Grok Beta
+vibecheck commit --provider ollama    # gpt-oss:20b (local)
 
 # Add custom context to the commit message
 vibecheck commit --prompt "refactored authentication logic"
+
+# Combine provider and custom context
+vibecheck commit --provider gemini --prompt "fixed bug in parser"
 
 # Check version
 vibecheck --version
@@ -71,3 +104,16 @@ vibecheck --version
 # Get help
 vibecheck --help
 ```
+
+## Supported Models
+
+All models are selected for cost-efficiency and quality comparable to GPT-4o-mini:
+
+| Provider   | Model                    | Cost-Efficiency | Speed  |
+|------------|--------------------------|-----------------|--------|
+| OpenAI     | gpt-4o-mini             | High            | Fast   |
+| Gemini     | gemini-1.5-flash        | Very High       | Fast   |
+| Anthropic  | claude-3.5-haiku        | High            | Fast   |
+| Groq       | llama-3.3-70b-versatile | Very High       | Ultra  |
+| xAI        | grok-beta               | High            | Fast   |
+| Ollama     | gpt-oss:20b             | Free (Local)    | Medium |
