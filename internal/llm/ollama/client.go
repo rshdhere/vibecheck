@@ -16,8 +16,8 @@ import (
 type Model = string
 
 const (
-	// Using Mistral 7B with Q4 quantization for optimal performance and accuracy
-	GitCommitMessage Model = "mistral:7b-instruct-q4_K_M"
+	// using gpt-oss:20b for optimal performance and accuracy as it is an free/opensource llm directly from openai
+	GitCommitMessage Model = "gpt-oss:20b"
 )
 
 type generateRequestBody struct {
@@ -67,7 +67,6 @@ Your role is to function as an autonomous Git Commit Message Generator that prod
    - Output must be minimal, direct, and precise.  
 
 4. Enforce structural and stylistic consistency.
-   - I see that 'plaintext' word is being printed it shouldnt happen
    - you're not allowed to use backtick in commit message
    - Follow the Conventional Commit format exactly.  
    - Never include additional commentary, explanations, or markdown.  
@@ -78,7 +77,7 @@ Your role is to function as an autonomous Git Commit Message Generator that prod
 ---
 
 ### Output Format  
-<type>(<scope>): <short imperative summary>  
+<type>(<scope/context>): <short imperative summary>  
 
 <bullet point 1>  
 
