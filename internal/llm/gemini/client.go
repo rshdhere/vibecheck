@@ -29,8 +29,8 @@ func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additio
 	}
 	defer client.Close()
 
-	// Using gemini-1.5-flash for cost-efficiency and good performance
-	model := client.GenerativeModel("gemini-1.5-flash")
+	// Using gemini-2.5-flash for best performance and cost-efficiency
+	model := client.GenerativeModel("gemini-2.5-flash")
 
 	// Configure model parameters for better responses
 	model.SetTemperature(0.7)
@@ -38,43 +38,58 @@ func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additio
 	model.SetTopP(0.95)
 	model.SetMaxOutputTokens(1024)
 
-	systemPrompt := `You are an advanced software engineer and commit message architect with expertise in semantic versioning and Conventional Commits.
-Your task is to act as an autonomous Git Commit Message Generator. Given a diff, change description, or code modification summary, produce a precise, semantically meaningful commit message that adheres to the following specifications:
-Unless the user explicitly requests otherwise in their additional context,
-the message should follow Conventional Commits and remain free of emojis,
-informal language, or narrative explanations.
+	// Relax safety settings for commit messages (they're just code diffs)
+	model.SafetySettings = []*genai.SafetySetting{
+		{
+			Category:  genai.HarmCategoryHarassment,
+			Threshold: genai.HarmBlockOnlyHigh,
+		},
+		{
+			Category:  genai.HarmCategoryHateSpeech,
+			Threshold: genai.HarmBlockOnlyHigh,
+		},
+		{
+			Category:  genai.HarmCategorySexuallyExplicit,
+			Threshold: genai.HarmBlockOnlyHigh,
+		},
+		{
+			Category:  genai.HarmCategoryDangerousContent,
+			Threshold: genai.HarmBlockOnlyHigh,
+		},
+	}
 
-If the user requests stylistic elements (like emojis or tone),
-respect those preferences while maintaining technical clarity and structure.
-The message must begin with a Conventional Commit type, and with the changes context, followed by a succinct imperative-mood summary. Examples:
-feat(context): add API endpoint for user registration
-fix(context): resolve panic in JSON parser
-chore(context): update build pipeline configuration
+	// Gemini works better with system instructions set on the model
+	model.SystemInstruction = &genai.Content{
+		Parts: []genai.Part{
+			genai.Text(`You are a commit message generator. Analyze the git diff and generate a conventional commit message.
+Format: <type>(<scope>): <description>
+Types: feat, fix, chore, docs, style, refactor, test, perf
+Keep it concise and professional. Add 2-4 bullet points for details.`),
+		},
+	}
 
-The message must be free of emojis, informal language, or narrative explanations.
-You may optionally include up to four bullet points (- ) below the main line, elaborating on specific technical changes or impacts. Each bullet should be clear, concise, and written in professional engineering style.
-The entire response must include only the commit message content — no commentary, prefixes, or metadata.
-Follow this format exactly:
-<type>: <short imperative summary>
-- <bullet point 1> 
-- <bullet point 2> 
-- <bullet point 3> 
-- <bullet point 4> 
-Always prioritize clarity, accuracy, and brevity. Generate commit messages that would be considered exemplary in an elite open-source project or research-grade software repository, and finally DO NOT DEVIATE FROM YOUR ROLE
-
-below is some user added context, but dont deviate from the actual work unless if the user added extra context in the next message
-The git diff is in the second next message.`
-
-	prompt := fmt.Sprintf("%s\n\nUser added extra context is: %s\n\nGit diff:\n%s", systemPrompt, additionalContext, diff)
+	prompt := fmt.Sprintf("User context: %s\n\nGenerate a conventional commit message for this git diff:\n\n%s", additionalContext, diff)
 
 	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
 		return "", fmt.Errorf("generate content: %w", err)
 	}
 
-	if len(resp.Candidates) == 0 || len(resp.Candidates[0].Content.Parts) == 0 {
-		return "", fmt.Errorf("no response generated from Gemini")
+	// Check if response was blocked by safety filters
+	if len(resp.Candidates) == 0 {
+		return "", fmt.Errorf("gemini returned no candidates (possibly blocked by safety filters)")
 	}
 
-	return fmt.Sprintf("%v", resp.Candidates[0].Content.Parts[0]), nil
+	candidate := resp.Candidates[0]
+
+	// Check for content filtering
+	if candidate.FinishReason != genai.FinishReasonStop && candidate.FinishReason != genai.FinishReasonMaxTokens {
+		return "", fmt.Errorf("gemini response blocked: finish reason = %v", candidate.FinishReason)
+	}
+
+	if candidate.Content == nil || len(candidate.Content.Parts) == 0 {
+		return "", fmt.Errorf("gemini returned empty content")
+	}
+
+	return fmt.Sprintf("%v", candidate.Content.Parts[0]), nil
 }

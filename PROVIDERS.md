@@ -4,14 +4,17 @@ This document provides detailed information about all supported AI providers in 
 
 ## Overview
 
-vibecheck supports 6 AI providers, each optimized for cost-efficiency and quality:
+vibecheck supports 9 AI providers, each optimized for cost-efficiency and quality:
 
 1. **OpenAI** - GPT-4o-mini
 2. **Google Gemini** - gemini-1.5-flash
 3. **Anthropic** - Claude 3.5 Haiku
 4. **Groq** - Llama 3.3 70B Versatile
 5. **xAI** - Grok Beta
-6. **Ollama** - gpt-oss:20b (local)
+6. **Moonshot AI Kimi** - moonshot-v1-auto
+7. **Alibaba Qwen** - qwen-turbo
+8. **DeepSeek** - deepseek-chat
+9. **Ollama** - gpt-oss:20b (local)
 
 ---
 
@@ -31,9 +34,9 @@ vibecheck commit --provider openai
 
 ---
 
-### 2. Google Gemini (gemini-1.5-flash)
+### 2. Google Gemini (gemini-2.5-flash)
 
-**Model**: `gemini-1.5-flash`  
+**Model**: `gemini-2.5-flash`  
 **Cost**: $0.075/1M input tokens, $0.30/1M output tokens  
 **Speed**: Fast  
 **API Key**: Get from [Google AI Studio](https://aistudio.google.com/app/apikey)
@@ -108,7 +111,70 @@ vibecheck commit --provider grok
 
 ---
 
-### 6. Ollama (gpt-oss:20b)
+### 6. Moonshot AI Kimi (moonshot-v1-auto)
+
+**Model**: `moonshot-v1-auto`  
+**Cost**: Very low (competitive with Gemini)  
+**Speed**: Ultra-fast  
+**API Key**: Get from [Moonshot AI Platform](https://platform.moonshot.cn/)
+
+```bash
+export MOONSHOT_API_KEY="..."
+vibecheck commit --provider kimi
+```
+
+**Features**:
+- 1 trillion parameter MoE architecture
+- Activates only 32B parameters for efficiency
+- 128K context window
+- Excellent for coding tasks
+- Auto-selects best model variant
+
+---
+
+### 7. Alibaba Qwen (qwen-turbo)
+
+**Model**: `qwen-turbo`  
+**Cost**: Very low (extremely competitive)  
+**Speed**: Ultra-fast  
+**API Key**: Get from [Alibaba Cloud DashScope](https://dashscope.aliyun.com/)
+
+```bash
+export QWEN_API_KEY="..."
+vibecheck commit --provider qwen
+```
+
+**Features**:
+- Latest Qwen 3 generation model
+- MoE architecture for efficiency
+- 128K+ context window
+- Strong multilingual capabilities
+- Excellent code understanding
+
+---
+
+### 8. DeepSeek (deepseek-chat)
+
+**Model**: `deepseek-chat`  
+**Cost**: Extremely low ($0.14/1M input, $0.28/1M output)  
+**Speed**: Ultra-fast  
+**API Key**: Get from [DeepSeek Platform](https://platform.deepseek.com/)
+
+```bash
+export DEEPSEEK_API_KEY="..."
+vibecheck commit --provider deepseek
+```
+
+**Features**:
+- 671B parameter model
+- Best cost-to-performance ratio
+- Excellent coding and reasoning
+- 128K context window
+- OpenAI-compatible API
+
+---
+
+### 9. Ollama (gpt-oss:20b)
 
 **Model**: `gpt-oss:20b`  
 **Cost**: Free (runs locally)  
@@ -137,14 +203,17 @@ vibecheck commit --provider ollama
 
 For a typical commit message (≈500 input tokens, ≈150 output tokens):
 
-| Provider   | Cost per Commit | Free Tier | Speed    |
-|------------|----------------|-----------|----------|
-| Gemini     | ~$0.00006      | Yes       | Fast     |
-| OpenAI     | ~$0.00015      | No        | Fast     |
-| Anthropic  | ~$0.00100      | No        | Fast     |
-| Groq       | Free*          | Yes       | Ultra    |
-| xAI        | ~$0.00015      | No        | Fast     |
-| Ollama     | Free           | N/A       | Medium   |
+| Provider   | Cost per Commit | Free Tier | Speed      |
+|------------|----------------|-----------|------------|
+| DeepSeek   | ~$0.00011      | Yes       | Ultra-Fast |
+| Gemini     | ~$0.00006      | Yes       | Fast       |
+| Kimi       | ~$0.00008      | Yes       | Ultra-Fast |
+| Qwen       | ~$0.00007      | Yes       | Ultra-Fast |
+| OpenAI     | ~$0.00015      | No        | Fast       |
+| Anthropic  | ~$0.00100      | No        | Fast       |
+| Groq       | Free*          | Yes       | Ultra      |
+| xAI        | ~$0.00015      | No        | Fast       |
+| Ollama     | Free           | N/A       | Medium     |
 
 *Groq offers a generous free tier
 
@@ -156,16 +225,22 @@ For a typical commit message (≈500 input tokens, ≈150 output tokens):
 1. **Ollama** - Completely free, runs locally
 2. **Groq** - Free tier with ultra-fast speed
 3. **Gemini** - Lowest cloud pricing
+4. **DeepSeek** - Extremely low cost ($0.14/M tokens)
+5. **Qwen** - Very competitive pricing
 
 ### For Speed
-1. **Groq** - Fastest inference speed
-2. **Gemini** - Very fast
-3. **OpenAI** - Fast
+1. **DeepSeek** - Ultra-fast inference
+2. **Qwen** - Ultra-fast with MoE
+3. **Kimi** - Ultra-fast with auto-selection
+4. **Groq** - Fastest inference speed
+5. **Gemini** - Very fast
 
 ### For Quality
 1. **Anthropic** - Best reasoning
 2. **OpenAI** - Excellent quality
-3. **Gemini** - Strong performance
+3. **DeepSeek** - Strong coding performance
+4. **Kimi** - Excellent for code
+5. **Gemini** - Strong performance
 
 ### For Privacy
 1. **Ollama** - Runs completely locally
@@ -193,6 +268,15 @@ export GROQ_API_KEY="gsk_..."
 # xAI Grok
 export XAI_API_KEY="xai-..."
 
+# Moonshot AI Kimi
+export MOONSHOT_API_KEY="..."
+
+# Alibaba Qwen
+export QWEN_API_KEY="..."
+
+# DeepSeek
+export DEEPSEEK_API_KEY="..."
+
 # Ollama (optional)
 export OLLAMA_HOST="http://localhost:11434"
 ```
@@ -218,6 +302,15 @@ vibecheck commit --provider groq
 
 # Test xAI Grok
 vibecheck commit --provider grok
+
+# Test Kimi
+vibecheck commit --provider kimi
+
+# Test Qwen
+vibecheck commit --provider qwen
+
+# Test DeepSeek
+vibecheck commit --provider deepseek
 
 # Test Ollama
 vibecheck commit --provider ollama
