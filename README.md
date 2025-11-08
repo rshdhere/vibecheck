@@ -56,6 +56,7 @@ This will:
 ## Configuration
 
 Set up your API keys as environment variables:
+> **Skip:** If you already have one of the API keys in your .env already, then it picks it up AUTOMATICALLY.
 
 ```bash
 # OpenAI (GPT-4o-mini)
