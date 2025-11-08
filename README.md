@@ -3,7 +3,7 @@
 
 # vibecheck
 
-A command-line tool for automating git commit messages using AI models. Supports multiple providers including OpenAI (GPT-4o-mini), Ollama (gpt-oss:20b), Google Gemini, Anthropic Claude, Groq, and xAI Grok.
+A cross-platform command-line ai-tool for automating git commit messages using AI models. Supports multiple providers including OpenAI (GPT-4o-mini), Ollama (gpt-oss:20b), Google Gemini, Anthropic Claude, Groq, and xAI Grok.
 
 ## Installation
 
