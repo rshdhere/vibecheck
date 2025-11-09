@@ -90,7 +90,7 @@ func (m dashboardModel) View() string {
 		MarginBottom(1).
 		MarginTop(1)
 
-	title := titleStyle.Render("🧭  Vibecheck Dashboard")
+	title := titleStyle.Render("Vibecheck Dashboard")
 
 	// Stats section
 	statsBoxStyle := lipgloss.NewStyle().
