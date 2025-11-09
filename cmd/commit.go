@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
+	"github.com/rshdhere/vibecheck/internal/config"
 	"github.com/rshdhere/vibecheck/internal/git"
 	"github.com/rshdhere/vibecheck/internal/llm"
 	_ "github.com/rshdhere/vibecheck/internal/llm/anthropic"
@@ -93,5 +94,5 @@ func init() {
 	// is called directly, e.g.:
 	// commitCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	commitCmd.Flags().String(promptFlagName, "", "used to provide additional context to llm")
-	commitCmd.Flags().String(providerFlagName, "openai", fmt.Sprintf("used to select a particular ai-provider: %v", strings.Join(llm.GetRegisteredNames(), ",")))
+	commitCmd.Flags().String(providerFlagName, config.GetDefaultProvider(), fmt.Sprintf("used to select a particular ai-provider: %v (use 'vibecheck models' to change default)", strings.Join(llm.GetRegisteredNames(), ",")))
 }
