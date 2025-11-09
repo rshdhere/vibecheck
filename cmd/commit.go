@@ -23,6 +23,7 @@ import (
 	_ "github.com/rshdhere/vibecheck/internal/llm/ollama"
 	_ "github.com/rshdhere/vibecheck/internal/llm/openai"
 	_ "github.com/rshdhere/vibecheck/internal/llm/qwen"
+	"github.com/rshdhere/vibecheck/internal/stats"
 	"github.com/spf13/cobra"
 )
 
@@ -68,7 +69,10 @@ var commitCmd = &cobra.Command{
 		ctx, cancel := context.WithTimeout(cmd.Context(), time.Second*60)
 		defer cancel()
 
+		// Track latency
+		startTime := time.Now()
 		message, err := provider.GenerateCommitMessage(ctx, diff, additionalPrompt)
+		latency := time.Since(startTime).Seconds()
 		if err != nil {
 			return fmt.Errorf("generated commit message: %w", err)
 		}
@@ -77,6 +81,19 @@ var commitCmd = &cobra.Command{
 		if err := git.CommitWMessage(cmd.Context(), message); err != nil {
 			return fmt.Errorf("commit with message: %w", err)
 		}
+
+		// Record stats after successful commit
+		// Extract first line of commit message for display
+		commitMsg := message
+		if idx := strings.Index(message, "\n"); idx > 0 {
+			commitMsg = message[:idx]
+		}
+		if err := stats.RecordCommit(providerName, latency, commitMsg); err != nil {
+			// Don't fail the commit if stats recording fails
+			// Just log it silently
+			_ = err
+		}
+
 		return nil
 	},
 }
