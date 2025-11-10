@@ -60,8 +60,8 @@ release:
 # 📦 Include install scripts in releases (upload as assets)
 # ----------------------------------------------------
 blobs:
-  - provider: generic
-    # extra_files accepts globs; each matched file is uploaded as a release asset
+  - provider: github
+    bucket: vibecheck
     extra_files:
       - glob: install.sh
       - glob: install.ps1
