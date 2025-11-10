@@ -1,10 +1,5 @@
 # Make sure to check the documentation at https://goreleaser.com
 
-# The lines below are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/need to use them.
-# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
-# vim: set ts=2 sw=2 tw=0 fo=cnqoj
-
 version: 2
 
 before:
@@ -19,15 +14,11 @@ builds:
       - linux
       - windows
       - darwin
-    goarch:
-      - amd64
-      - arm64
     ldflags:
       - -s -w -X github.com/rshdhere/vibecheck/cmd.version={{.Version}}
 
 archives:
   - formats: [tar.gz]
-    # name template (keeps things predictable)
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -38,9 +29,6 @@ archives:
     format_overrides:
       - goos: windows
         formats: [zip]
-    files:
-      - LICENSE
-      - README.md
 
 changelog:
   sort: asc
@@ -55,13 +43,6 @@ release:
     ---
 
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
-
-# ----------------------------------------------------
-# 📦 Include install scripts in releases (upload as assets)
-# ----------------------------------------------------
-blobs:
-  - provider: github
-    bucket: vibecheck
-    extra_files:
-      - glob: install.sh
-      - glob: install.ps1
+  extra_files:
+    - glob: install.sh
+    - glob: install.ps1
