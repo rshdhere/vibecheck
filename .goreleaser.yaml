@@ -58,6 +58,6 @@ release:
 # ----------------------------------------------------
 blobs:
   - provider: generic
-    files:
+    targets:
       - install.sh
       - install.ps1
