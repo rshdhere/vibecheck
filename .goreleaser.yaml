@@ -56,6 +56,8 @@ release:
 # ----------------------------------------------------
 # 📦 Include install scripts in releases
 # ----------------------------------------------------
-extra_files:
-  - glob: install.sh
-  - glob: install.ps1
+blobs:
+  - provider: http
+    path: install.sh
+  - provider: http
+    path: install.ps1
