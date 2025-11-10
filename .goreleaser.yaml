@@ -9,9 +9,7 @@ version: 2
 
 before:
   hooks:
-    # You may remove this if you don't use go modules.
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
 
 builds:
@@ -21,12 +19,15 @@ builds:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
     ldflags:
       - -s -w -X github.com/rshdhere/vibecheck/cmd.version={{.Version}}
 
 archives:
   - formats: [tar.gz]
-    # this name template makes the OS and Arch compatible with the results of `uname`.
+    # name template (keeps things predictable)
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -34,10 +35,12 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
     format_overrides:
       - goos: windows
         formats: [zip]
+    files:
+      - LICENSE
+      - README.md
 
 changelog:
   sort: asc
@@ -54,10 +57,11 @@ release:
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
 
 # ----------------------------------------------------
-# 📦 Include install scripts in releases
+# 📦 Include install scripts in releases (upload as assets)
 # ----------------------------------------------------
 blobs:
   - provider: generic
-    targets:
-      - install.sh
-      - install.ps1
+    # extra_files accepts globs; each matched file is uploaded as a release asset
+    extra_files:
+      - glob: install.sh
+      - glob: install.ps1
