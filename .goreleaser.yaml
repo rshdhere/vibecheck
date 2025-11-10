@@ -57,7 +57,7 @@ release:
 # 📦 Include install scripts in releases
 # ----------------------------------------------------
 blobs:
-  - provider: http
-    path: install.sh
-  - provider: http
-    path: install.ps1
+  - provider: generic
+    files:
+      - install.sh
+      - install.ps1
