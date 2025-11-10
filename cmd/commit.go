@@ -22,6 +22,7 @@ import (
 	_ "github.com/rshdhere/vibecheck/internal/llm/kimi"
 	_ "github.com/rshdhere/vibecheck/internal/llm/ollama"
 	_ "github.com/rshdhere/vibecheck/internal/llm/openai"
+	_ "github.com/rshdhere/vibecheck/internal/llm/perplexity"
 	_ "github.com/rshdhere/vibecheck/internal/llm/qwen"
 	"github.com/rshdhere/vibecheck/internal/stats"
 	"github.com/spf13/cobra"
@@ -37,7 +38,7 @@ type ProviderFunc func(context.Context, string, string) (string, error)
 var commitCmd = &cobra.Command{
 	Use:     "commit",
 	Short:   "A command-line tool for easing git commit messages for me(or may be you guys too lol), adding multiple models to it sounds cool right?!",
-	Long:    `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like gpt-oss:20b, GPT4o-mini, Gemini-2.5-Flash, Claude-3.5-Haiku, Llama-3.3-70b (via Groq), Grok-beta, Kimi K2, Qwen-Turbo, and DeepSeek-Chat`,
+	Long:    `A complete solution for vibecoders to vibecheck their code and save it locally even before it messess-up your production, vibecheck is a check point were they can automate their commit message to models like gpt-oss:20b, GPT4o-mini, Gemini-2.5-Flash, Claude-3.5-Haiku, Llama-3.3-70b (via Groq), Grok-beta, Kimi K2, Qwen-Turbo, DeepSeek-Chat, and Perplexity Sonar`,
 	Version: version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		diff, err := git.StagedDiff(cmd.Context())

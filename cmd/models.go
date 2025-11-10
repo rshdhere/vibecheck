@@ -88,6 +88,13 @@ var availableModels = []Model{
 		description: "deepseek-chat • Ultra-Fast • Best value",
 	},
 	{
+		name:        "perplexity",
+		displayName: "Perplexity Sonar",
+		model:       "sonar",
+		badge:       "",
+		description: "sonar • Fast • Search grounded",
+	},
+	{
 		name:        "ollama",
 		displayName: "Ollama (Local)",
 		model:       "gpt-oss:20b",

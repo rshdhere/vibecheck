@@ -4,7 +4,7 @@ This document provides detailed information about all supported AI providers in 
 
 ## Overview
 
-vibecheck supports 9 AI providers, each optimized for cost-efficiency and quality:
+vibecheck supports 10 AI providers, each optimized for cost-efficiency and quality:
 
 1. **OpenAI** - GPT-4o-mini
 2. **Google Gemini** - gemini-2.5-flash
@@ -14,7 +14,8 @@ vibecheck supports 9 AI providers, each optimized for cost-efficiency and qualit
 6. **Moonshot AI Kimi** - moonshot-v1-auto
 7. **Alibaba Qwen** - qwen-turbo
 8. **DeepSeek** - deepseek-chat
-9. **Ollama** - gpt-oss:20b (local)
+9. **Perplexity** - sonar
+10. **Ollama** - gpt-oss:20b (local)
 
 ---
 
@@ -174,7 +175,27 @@ vibecheck commit --provider deepseek
 
 ---
 
-### 9. Ollama (gpt-oss:20b)
+### 9. Perplexity (sonar)
+
+**Model**: `sonar`  
+**Cost**: ~$0.60/1M input tokens, ~$0.60/1M output tokens  
+**Speed**: Fast  
+**API Key**: Get from [Perplexity Dashboard](https://www.perplexity.ai/settings/api)
+
+```bash
+export PERPLEXITY_API_KEY="pplx-..."
+vibecheck commit --provider perplexity
+```
+
+**Features**:
+- Search-grounded responses with fresh context
+- 128K context window
+- Balanced cost and quality
+- OpenAI-compatible API surface
+
+---
+
+### 10. Ollama (gpt-oss:20b)
 
 **Model**: `gpt-oss:20b`  
 **Cost**: Free (runs locally)  
@@ -213,6 +234,7 @@ For a typical commit message (≈500 input tokens, ≈150 output tokens):
 | Anthropic  | ~$0.00100      | No        | Fast       |
 | Groq       | Free*          | Yes       | Ultra      |
 | xAI        | ~$0.00015      | No        | Fast       |
+| Perplexity | ~$0.00045      | No        | Fast       |
 | Ollama     | Free           | N/A       | Medium     |
 
 *Groq offers a generous free tier
@@ -277,6 +299,9 @@ export QWEN_API_KEY="..."
 # DeepSeek
 export DEEPSEEK_API_KEY="..."
 
+# Perplexity
+export PERPLEXITY_API_KEY="pplx-..."
+
 # Ollama (optional)
 export OLLAMA_HOST="http://localhost:11434"
 ```
@@ -311,6 +336,9 @@ vibecheck commit --provider qwen
 
 # Test DeepSeek
 vibecheck commit --provider deepseek
+
+# Test Perplexity
+vibecheck commit --provider perplexity
 
 # Test Ollama
 vibecheck commit --provider ollama

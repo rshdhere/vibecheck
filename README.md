@@ -3,7 +3,7 @@
 
 # vibecheck
 
-A cross-platform command-line ai-tool for automating git commit messages using AI models. Supports 09 providers including OpenAI, Gemini 2.5, Anthropic Claude, Groq, Grok, Kimi K2, Qwen, DeepSeek, and Ollama.
+A cross-platform command-line ai-tool for automating git commit messages using AI models. Supports 10 providers including OpenAI, Gemini 2.5, Anthropic Claude, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
 
 ## Installation
 
@@ -86,6 +86,9 @@ export QWEN_API_KEY="your-qwen-api-key"
 # DeepSeek (deepseek-chat)
 export DEEPSEEK_API_KEY="your-deepseek-api-key"
 
+# Perplexity (sonar)
+export PERPLEXITY_API_KEY="your-perplexity-api-key"
+
 # Ollama (local, no API key needed)
 # Set OLLAMA_HOST if not using default http://localhost:11434
 export OLLAMA_HOST="http://localhost:11434"
@@ -106,6 +109,7 @@ vibecheck commit --provider grok      # Grok Beta
 vibecheck commit --provider kimi      # Kimi K2 (Moonshot-v1-auto)
 vibecheck commit --provider qwen      # Qwen Turbo
 vibecheck commit --provider deepseek  # DeepSeek Chat
+vibecheck commit --provider perplexity # Perplexity Sonar (sonar)
 vibecheck commit --provider ollama    # gpt-oss:20b (local)
 
 # Add custom context to the commit message
@@ -138,4 +142,5 @@ All models are selected for cost-efficiency and quality comparable to GPT-4o-min
 | Kimi       | moonshot-v1-auto        | Very High       | Ultra-Fast |
 | Qwen       | qwen-turbo              | Very High       | Ultra-Fast |
 | DeepSeek   | deepseek-chat           | Extremely High  | Ultra-Fast |
+| Perplexity | sonar                   | High            | Fast       |
 | Ollama     | gpt-oss:20b             | Free (Local)    | Medium     |
