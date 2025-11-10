@@ -10,7 +10,7 @@ A cross-platform command-line ai-tool for automating git commit messages using A
 ### macOS / Linux
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/rshdhere/vibecheck/main/install.sh | bash
+curl -fsSL https://install.raashed.xyz | bash
 ```
 
 ### Windows (PowerShell)
@@ -18,7 +18,7 @@ curl -fsSL https://raw.githubusercontent.com/rshdhere/vibecheck/main/install.sh 
 Run PowerShell as administrator, then execute:
 
 ```powershell
-iwr https://raw.githubusercontent.com/rshdhere/vibecheck/main/install.ps1 | iex
+iwr https://install.raashed.xyz/install.ps1 -useb | iex
 ```
 
 ### Build from Source
