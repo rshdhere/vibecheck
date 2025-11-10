@@ -120,6 +120,7 @@ vibecheck --version
 # Get help
 vibecheck --help
 ```
+![dashboard-cut](https://github.com/user-attachments/assets/e45d09f6-bc3a-41cf-a8aa-d26e21a04880)
 
 ## Supported Models
 
