@@ -80,7 +80,7 @@ To obtain your Google Gemini API key from Google AI Studio, follow these steps:
 9. **Copy the generated API key** that appears on screen
 10. **Store it securely** and use it as your `GEMINI_API_KEY` environment variable
 
-![gemini-api-guide](https://github.com/user-attachments/assets/9bc6354a-a392-46e3-9ac3-544d218815b2)
+[gemini-api-guide](https://github.com/user-attachments/assets/9bc6354a-a392-46e3-9ac3-544d218815b2)
 
 > **Important:** Keep your API key secure and never commit it to version
 
