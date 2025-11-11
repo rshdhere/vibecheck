@@ -126,8 +126,7 @@ vibecheck upgrade
 
 ## Configuration
 
-> **Important :** Keep your API key secure and never commit it to version
->
+
 > **Free API Keys :** A quick walk through by a contributor, over how to actually get an API key
 
 [gemini.webm](https://github.com/user-attachments/assets/ee457c89-d071-45cd-880d-45b3aa6c7b3a)
