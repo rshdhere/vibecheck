@@ -49,6 +49,7 @@ vibecheck upgrade
 ```
 
 This will:
+
 - Check for the latest release from GitHub
 - Download and install the new version automatically
 - Preserve your configuration
@@ -58,7 +59,35 @@ This will:
 
 ## Configuration
 
+### Getting API Keys
+
+#### Google Gemini API Key
+
+To obtain your Google Gemini API key from Google AI Studio, follow these steps:
+
+1. **Open your web browser** and search for "Google AI Studio"
+2. **Click on the official Google AI Studio link** (https://aistudio.google.com)
+3. **Click "Get started"** to access the platform
+4. **Sign in** with your Google account if prompted
+5. **Navigate to the main dashboard**
+6. **Click "Get API key"** or look for the **"Create API key"** button
+7. **Name your API key** (e.g., "vibecheck-commits" or any descriptive name)
+8. **Configure project settings:**
+    - You'll see an option to "Choose or import project"
+    - Click **"Create new project"** for a dedicated project
+    - Enter a **project name** (e.g., "vibecheck-project")
+    - Press **Enter** to confirm the project creation
+9. **Copy the generated API key** that appears on screen
+10. **Store it securely** and use it as your `GEMINI_API_KEY` environment variable
+
+![gemini-api-guide](https://github.com/user-attachments/assets/9bc6354a-a392-46e3-9ac3-544d218815b2)
+
+> **Important:** Keep your API key secure and never commit it to version
+
+## Environment Variables
+
 Set up your API keys as environment variables:
+
 > **Skip:** If you already have one of the API keys in your .env already, then it picks it up AUTOMATICALLY.
 
 ```bash
@@ -124,16 +153,16 @@ vibecheck --version
 # Get help
 vibecheck --help
 ```
+
 ![dashboard-cut](https://github.com/user-attachments/assets/e45d09f6-bc3a-41cf-a8aa-d26e21a04880)
 ![models](https://github.com/user-attachments/assets/bc496954-87e2-4487-a352-bafbb2ea70a7)
-
 
 ## Supported Models
 
 All models are selected for cost-efficiency and quality comparable to GPT-4o-mini:
 
-| Provider   | Model                    | Cost-Efficiency | Speed      |
-|------------|--------------------------|-----------------|------------|
+| Provider   | Model                   | Cost-Efficiency | Speed      |
+| ---------- | ----------------------- | --------------- | ---------- |
 | OpenAI     | gpt-4o-mini             | High            | Fast       |
 | Gemini     | gemini-2.5-flash        | Very High       | Ultra-Fast |
 | Anthropic  | claude-3.5-haiku        | High            | Fast       |
