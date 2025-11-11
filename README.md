@@ -1,4 +1,4 @@
-# vibecheck
+# Vibecheck
 
 A Cross-Platform Command-Line AI-tool for automating git commit messages by outsourcing them to LLMs. Supports multiple providers including OpenAI, Gemini, Anthropic, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
 
@@ -20,15 +20,7 @@ iwr https://install.raashed.xyz/install.ps1 -useb | iex
 
 > **Note :** The Install scripts automatically detect and remove old installations to prevent PATH conflicts.
 
-## Upgrading
-
-Keep vibecheck up to date with a single command:
-
-```bash
-vibecheck upgrade
-```
-> **Note :** If vibecheck is installed in a protected directory like `/usr/local/bin`, the upgrade command will automatically re-run itself with sudo to complete the installation.
-## Ultimate One Liner
+## The Ultimate One Liner
 
 ```bash
 vibecheck commit
@@ -123,6 +115,14 @@ vibecheck commit --provider gemini --prompt "fixed bug in parser"
 vibecheck --version
 vibecheck --help
 ```
+## Upgrading
+
+Keep vibecheck up to date with a single command:
+
+```bash
+vibecheck upgrade
+```
+> **Note :** If vibecheck is installed in a protected directory like `/usr/local/bin`, the upgrade command will automatically re-run itself with sudo to complete the installation.
 
 ## Configuration
 
