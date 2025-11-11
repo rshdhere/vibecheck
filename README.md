@@ -1,4 +1,4 @@
-[![Downloads](https://img.shields.io/github/downloads/rshdhere/vibecheck/total?color=cyan&label=Downloads&logo=github)](https://github.com/rshdhere/vibecheck/releases)
+[![Downloads](https://install.raashed.xyz/badge)](https://github.com/rshdhere/vibecheck/releases)
 [![Stars](https://img.shields.io/github/stars/rshdhere/vibecheck?color=yellow&logo=github)](https://github.com/rshdhere/vibecheck/stargazers)
 
 # vibecheck
