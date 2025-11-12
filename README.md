@@ -13,7 +13,7 @@ curl -fsSL https://install.raashed.xyz | bash
 iwr https://install.raashed.xyz/install.ps1 -useb | iex
 ```
 
-> **Important :** Make sure to run the command as an Administrator using Powershell to ensure proper installation and PATH updates.
+> **Important :** Make sure to run the command as an administrator using Powershell.
 ### macOS
 ```bash
 brew tap rshdhere/vibecheck
