@@ -1,9 +1,6 @@
-[![Downloads](https://img.shields.io/github/downloads/rshdhere/vibecheck/total?color=cyan&label=Downloads&logo=github)](https://github.com/rshdhere/vibecheck/releases)
-[![Stars](https://img.shields.io/github/stars/rshdhere/vibecheck?color=yellow&logo=github)](https://github.com/rshdhere/vibecheck/stargazers)
-
 # vibecheck
 
-A cross-platform command-line ai-tool for automating git commit messages using AI models. Supports 10 providers including OpenAI, Gemini 2.5, Anthropic Claude, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
+A Cross-Platform Command-Line AI-tool for automating git commit messages by outsourcing them to LLMs. Supports multiple providers including OpenAI, Gemini, Anthropic, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
 
 ## Installation
 
@@ -21,86 +18,85 @@ Run PowerShell as administrator, then execute:
 iwr https://install.raashed.xyz/install.ps1 -useb | iex
 ```
 
-### Build from Source
+> **Note :** The Install scripts automatically detect and remove old installations to prevent PATH conflicts.
+
+## The Ultimate One Liner
 
 ```bash
-# Clone the repository
-git clone https://github.com/rshdhere/vibecheck.git
-cd vibecheck
-
-# Build (version is automatically detected from git tags)
-make build
-
-# Or install to $GOPATH/bin
-make install
-
-# Or run directly
-make run ARGS="--version"
+vibecheck commit
 ```
+> **Note :** Make sure you stage your files, right before you check that it passes the vibecheck ;)
 
-> **Note:** The install scripts automatically detect and remove old installations to prevent PATH conflicts.
+## Demonstration
 
-## Upgrading
+![full-demo-vibecheck](https://github.com/user-attachments/assets/e8cd1f16-34bb-4356-a07b-03271c0d926c)
 
-Keep vibecheck up to date with a single command:
+## More Features
+```bash
+vibecheck dashboard
+```
+> **Dashboard :** It keeps the tab of the commits you generated and money you saved with vibecheck
+>
+![dashboard-cut](https://github.com/user-attachments/assets/e45d09f6-bc3a-41cf-a8aa-d26e21a04880)
 
 ```bash
-vibecheck upgrade
+vibecheck models
 ```
+> **Models :** You can switch the models for better latency and accuracy all along
+>
+![models](https://github.com/user-attachments/assets/d9aa6645-5876-427f-8633-310be70dbfe8)
 
-This will:
-- Check for the latest release from GitHub
-- Download and install the new version automatically
-- Preserve your configuration
-- Automatically request sudo privileges if needed (Linux/macOS)
 
-> **Note:** If vibecheck is installed in a protected directory like `/usr/local/bin`, the upgrade command will automatically re-run itself with sudo to complete the installation.
+## Supported Models
 
-## Configuration
+All models are selected for cost-efficiency and quality comparable to GPT-4o-mini:
+
+| Provider   | Model                   | Cost-Efficiency | Speed      |
+| ---------- | ----------------------- | --------------- | ---------- |
+| OpenAI     | gpt-4o-mini             | High            | Fast       |
+| Gemini     | gemini-2.5-flash        | Very High       | Ultra-Fast |
+| Anthropic  | claude-3.5-haiku        | High            | Fast       |
+| Groq       | llama-3.3-70b-versatile | Very High       | Ultra      |
+| xAI        | grok-beta               | High            | Fast       |
+| Kimi       | moonshot-v1-auto        | Very High       | Ultra-Fast |
+| Qwen       | qwen-turbo              | Very High       | Ultra-Fast |
+| DeepSeek   | deepseek-chat           | Extremely High  | Ultra-Fast |
+| Perplexity | sonar                   | High            | Fast       |
+| Ollama     | gpt-oss:20b             | Free (Local)    | Medium     |
+
+## Environment Variables
 
 Set up your API keys as environment variables:
+
 > **Skip:** If you already have one of the API keys in your .env already, then it picks it up AUTOMATICALLY.
 
 ```bash
-# OpenAI (GPT-4o-mini)
 export OPENAI_API_KEY="your-openai-api-key"
 
-# Google Gemini (gemini-2.5-flash)
 export GEMINI_API_KEY="your-gemini-api-key"
 
-# Anthropic Claude (claude-3.5-haiku)
 export ANTHROPIC_API_KEY="your-anthropic-api-key"
 
-# Groq (llama-3.3-70b-versatile)
 export GROQ_API_KEY="your-groq-api-key"
 
-# xAI Grok (grok-beta)
 export XAI_API_KEY="your-xai-api-key"
 
-# Moonshot AI Kimi (moonshot-v1-auto)
 export MOONSHOT_API_KEY="your-moonshot-api-key"
 
-# Alibaba Qwen (qwen-turbo)
 export QWEN_API_KEY="your-qwen-api-key"
 
-# DeepSeek (deepseek-chat)
 export DEEPSEEK_API_KEY="your-deepseek-api-key"
 
-# Perplexity (sonar)
 export PERPLEXITY_API_KEY="your-perplexity-api-key"
 
-# Ollama (local, no API key needed)
-# Set OLLAMA_HOST if not using default http://localhost:11434
 export OLLAMA_HOST="http://localhost:11434"
 ```
 
-## Usage
+## Usage For Productivity (Mini Docs)
 
 ```bash
-# Generate and commit with AI (default: OpenAI)
 vibecheck commit
 
-# Use a specific provider
 vibecheck commit --provider openai    # GPT-4o-mini
 vibecheck commit --provider gemini    # Gemini 2.5 Flash
 vibecheck commit --provider anthropic # Claude 3.5 Haiku
@@ -112,35 +108,26 @@ vibecheck commit --provider deepseek  # DeepSeek Chat
 vibecheck commit --provider perplexity # Perplexity Sonar (sonar)
 vibecheck commit --provider ollama    # gpt-oss:20b (local)
 
-# Add custom context to the commit message
-vibecheck commit --prompt "refactored authentication logic"
+vibecheck commit --prompt "make sure to use 02 emoji's in my commit message"
 
-# Combine provider and custom context
 vibecheck commit --provider gemini --prompt "fixed bug in parser"
 
-# Check version
 vibecheck --version
-
-# Get help
 vibecheck --help
 ```
-![dashboard-cut](https://github.com/user-attachments/assets/e45d09f6-bc3a-41cf-a8aa-d26e21a04880)
-![models](https://github.com/user-attachments/assets/bc496954-87e2-4487-a352-bafbb2ea70a7)
+## Upgrading
+
+Keep vibecheck up to date with a single command:
+
+```bash
+vibecheck upgrade
+```
+> **Note :** If vibecheck is installed in a protected directory like `/usr/local/bin`, the upgrade command will automatically re-run itself with sudo to complete the installation.
+
+## Configuration
 
 
-## Supported Models
+> **Free API Keys :** A quick walk through by a contributor, over how to actually get an API key
 
-All models are selected for cost-efficiency and quality comparable to GPT-4o-mini:
+[gemini.webm](https://github.com/user-attachments/assets/ee457c89-d071-45cd-880d-45b3aa6c7b3a)
 
-| Provider   | Model                    | Cost-Efficiency | Speed      |
-|------------|--------------------------|-----------------|------------|
-| OpenAI     | gpt-4o-mini             | High            | Fast       |
-| Gemini     | gemini-2.5-flash        | Very High       | Ultra-Fast |
-| Anthropic  | claude-3.5-haiku        | High            | Fast       |
-| Groq       | llama-3.3-70b-versatile | Very High       | Ultra      |
-| xAI        | grok-beta               | High            | Fast       |
-| Kimi       | moonshot-v1-auto        | Very High       | Ultra-Fast |
-| Qwen       | qwen-turbo              | Very High       | Ultra-Fast |
-| DeepSeek   | deepseek-chat           | Extremely High  | Ultra-Fast |
-| Perplexity | sonar                   | High            | Fast       |
-| Ollama     | gpt-oss:20b             | Free (Local)    | Medium     |
