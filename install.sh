@@ -14,33 +14,33 @@ NC='\033[0m' # No Color
 
 # Function to find all existing installations
 find_existing_installations() {
-    local locations=(
-        "/usr/local/bin/$BIN"
-        "/usr/bin/$BIN"
-        "$HOME/go/bin/$BIN"
-        "$HOME/.local/bin/$BIN"
-        "$HOME/bin/$BIN"
-    )
-    
-    # Also check GOPATH if set
-    if [ -n "$GOPATH" ]; then
-        locations+=("$GOPATH/bin/$BIN")
+  local locations=(
+    "/usr/local/bin/$BIN"
+    "/usr/bin/$BIN"
+    "$HOME/go/bin/$BIN"
+    "$HOME/.local/bin/$BIN"
+    "$HOME/bin/$BIN"
+  )
+
+  # Also check GOPATH if set
+  if [ -n "$GOPATH" ]; then
+    locations+=("$GOPATH/bin/$BIN")
+  fi
+
+  local found=()
+  for loc in "${locations[@]}"; do
+    if [ -f "$loc" ] && [ "$loc" != "$INSTALL_DIR/$BIN" ]; then
+      found+=("$loc")
     fi
-    
-    local found=()
-    for loc in "${locations[@]}"; do
-        if [ -f "$loc" ] && [ "$loc" != "$INSTALL_DIR/$BIN" ]; then
-            found+=("$loc")
-        fi
-    done
-    
-    echo "${found[@]}"
+  done
+
+  echo "${found[@]}"
 }
 
 # Function to get version of a binary
 get_version() {
-    local binary=$1
-    $binary --version 2>/dev/null | head -1 || echo "unknown"
+  local binary=$1
+  $binary --version 2>/dev/null | head -1 || echo "unknown"
 }
 
 # Get latest tag from GitHub API
@@ -54,26 +54,26 @@ fi
 # Check for existing installations
 existing=($(find_existing_installations))
 if [ ${#existing[@]} -gt 0 ]; then
-    echo -e "${YELLOW}⚠️  Found existing installation(s):${NC}"
-    for loc in "${existing[@]}"; do
-        ver=$(get_version "$loc")
-        echo -e "   ${loc} ${BLUE}(version: ${ver})${NC}"
-    done
-    echo ""
-    echo -e "${YELLOW}🧹 Cleaning up old installations to avoid PATH conflicts...${NC}"
-    for loc in "${existing[@]}"; do
-        if [ -w "$loc" ]; then
-            rm -f "$loc"
-            echo -e "   ${GREEN}✓${NC} Removed $loc"
-        elif [ -w "$(dirname "$loc")" ]; then
-            rm -f "$loc"
-            echo -e "   ${GREEN}✓${NC} Removed $loc"
-        else
-            # Need sudo for system locations
-            sudo rm -f "$loc" 2>/dev/null && echo -e "   ${GREEN}✓${NC} Removed $loc" || echo -e "   ${YELLOW}⚠${NC}  Couldn't remove $loc (please remove manually)"
-        fi
-    done
-    echo ""
+  echo -e "${YELLOW}⚠️  Found existing installation(s):${NC}"
+  for loc in "${existing[@]}"; do
+    ver=$(get_version "$loc")
+    echo -e "   ${loc} ${BLUE}(version: ${ver})${NC}"
+  done
+  echo ""
+  echo -e "${YELLOW}🧹 Cleaning up old installations to avoid PATH conflicts...${NC}"
+  for loc in "${existing[@]}"; do
+    if [ -w "$loc" ]; then
+      rm -f "$loc"
+      echo -e "   ${GREEN}✓${NC} Removed $loc"
+    elif [ -w "$(dirname "$loc")" ]; then
+      rm -f "$loc"
+      echo -e "   ${GREEN}✓${NC} Removed $loc"
+    else
+      # Need sudo for system locations
+      sudo rm -f "$loc" 2>/dev/null && echo -e "   ${GREEN}✓${NC} Removed $loc" || echo -e "   ${YELLOW}⚠${NC}  Couldn't remove $loc (please remove manually)"
+    fi
+  done
+  echo ""
 fi
 
 OS=$(uname | tr '[:upper:]' '[:lower:]')
@@ -105,10 +105,10 @@ echo -e "📍 Location: ${BLUE}$INSTALL_DIR/$BIN${NC}"
 
 # Check if /usr/local/bin is in PATH
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
-    echo ""
-    echo -e "${YELLOW}⚠️  Warning: $INSTALL_DIR is not in your PATH${NC}"
-    echo -e "   Add this to your ~/.bashrc or ~/.zshrc:"
-    echo -e "   ${BLUE}export PATH=\"$INSTALL_DIR:\$PATH\"${NC}"
+  echo ""
+  echo -e "${YELLOW}⚠️  Warning: $INSTALL_DIR is not in your PATH${NC}"
+  echo -e "   Add this to your ~/.bashrc or ~/.zshrc:"
+  echo -e "   ${BLUE}export PATH=\"$INSTALL_DIR:\$PATH\"${NC}"
 fi
 
 echo ""
