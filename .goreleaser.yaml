@@ -10,7 +10,7 @@ before:
 
 builds:
   - id: vibecheck
-    main: ./cmd/vibecheck
+    main: .
     binary: vibecheck
     env:
       - CGO_ENABLED=0
