@@ -4,13 +4,11 @@ A Cross-Platform Command-Line AI-tool for automating git commit messages by outs
 
 ## Installation
 
-### macOS / Linux
-
+## linux
 ```bash
 curl -fsSL https://install.raashed.xyz | bash
 ```
-
-### Windows (PowerShell)
+### windows
 
 Run PowerShell as administrator, then execute:
 
@@ -19,6 +17,15 @@ iwr https://install.raashed.xyz/install.ps1 -useb | iex
 ```
 
 > **Note :** The Install scripts automatically detect and remove old installations to prevent PATH conflicts.
+
+### macOS
+```bash
+brew tap rshdhere/vibecheck
+
+brew install --cask vibecheck
+```
+> **Note :** Direct install via `brew install vibecheck` is comming soon
+
 
 ## The Ultimate One Liner
 
