@@ -13,7 +13,7 @@ curl -fsSL https://install.raashed.xyz | bash
 iwr https://install.raashed.xyz/install.ps1 -useb | iex
 ```
 
-> **Important :** The installation scripts automatically detect and remove any previous versions to prevent PATH conflicts. It’s important to run the command as an Administrator to ensure proper installation and PATH updates.
+> **Important :** The installation scripts automatically detect and remove any previous versions to prevent PATH conflicts. It’s important to run the command as an Administrator using Powershell to ensure proper installation and PATH updates.
 ### macOS
 ```bash
 brew tap rshdhere/vibecheck
