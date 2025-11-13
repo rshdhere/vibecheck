@@ -29,6 +29,7 @@ brew install --cask vibecheck
 ```bash
 vibecheck commit
 ```
+
 > **Note :** Make sure you stage your files, right before you check that it passes the vibecheck ;)
 
 ## Demonstration
@@ -36,20 +37,22 @@ vibecheck commit
 ![full-demo-vibecheck](https://github.com/user-attachments/assets/e8cd1f16-34bb-4356-a07b-03271c0d926c)
 
 ## More Features
+
 ```bash
 vibecheck dashboard
 ```
+
 > **Dashboard :** It keeps the tab of the commits you generated and money you saved with vibecheck
 >
-![dashboard-cut](https://github.com/user-attachments/assets/e45d09f6-bc3a-41cf-a8aa-d26e21a04880)
+> ![dashboard-cut](https://github.com/user-attachments/assets/e45d09f6-bc3a-41cf-a8aa-d26e21a04880)
 
 ```bash
 vibecheck models
 ```
+
 > **Models :** You can switch the models for better latency and accuracy all along
 >
-![models](https://github.com/user-attachments/assets/d9aa6645-5876-427f-8633-310be70dbfe8)
-
+> ![models](https://github.com/user-attachments/assets/d9aa6645-5876-427f-8633-310be70dbfe8)
 
 ## Supported Models
 
@@ -119,6 +122,7 @@ vibecheck commit --provider gemini --prompt "fixed bug in parser"
 vibecheck --version
 vibecheck --help
 ```
+
 ## Upgrading
 
 Keep vibecheck up to date with a single command:
@@ -126,12 +130,13 @@ Keep vibecheck up to date with a single command:
 ```bash
 vibecheck upgrade
 ```
+
 > **Note :** If vibecheck is installed in a protected directory like `/usr/local/bin`, the upgrade command will automatically re-run itself with sudo to complete the installation.
 
 ## Configuration
-
 
 > **Free API Keys :** A quick walk through by a contributor, over how to actually get an API key
 
 [gemini.webm](https://github.com/user-attachments/assets/ee457c89-d071-45cd-880d-45b3aa6c7b3a)
 
+[perplexity.webm](https://github.com/user-attachments/assets/9ec9b250-4b64-4b0e-9374-e7eb01233d37)
