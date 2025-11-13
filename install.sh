@@ -22,7 +22,6 @@ find_existing_installations() {
     "$HOME/bin/$BIN"
   )
 
-  # Also check GOPATH if set
   if [ -n "$GOPATH" ]; then
     locations+=("$GOPATH/bin/$BIN")
   fi
@@ -37,21 +36,23 @@ find_existing_installations() {
   echo "${found[@]}"
 }
 
-# Function to get version of a binary
 get_version() {
   local binary=$1
   $binary --version 2>/dev/null | head -1 || echo "unknown"
 }
 
-# Get latest tag from GitHub API
+# --- FIXED FOR MACOS (NO GNU GREP NEEDED) ---
 echo -e "${BLUE}🔍 Checking for latest release...${NC}"
-TAG=$(curl -s https://api.github.com/repos/$REPO/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
+TAG=$(curl -s https://api.github.com/repos/$REPO/releases/latest |
+  grep '"tag_name"' |
+  sed -E 's/.*"tag_name": "([^"]+)".*/\1/')
+
 if [ -z "$TAG" ]; then
   echo -e "${RED}❌ No releases found for $REPO${NC}"
   exit 1
 fi
+# --------------------------------------------
 
-# Check for existing installations
 existing=($(find_existing_installations))
 if [ ${#existing[@]} -gt 0 ]; then
   echo -e "${YELLOW}⚠️  Found existing installation(s):${NC}"
@@ -69,8 +70,8 @@ if [ ${#existing[@]} -gt 0 ]; then
       rm -f "$loc"
       echo -e "   ${GREEN}✓${NC} Removed $loc"
     else
-      # Need sudo for system locations
-      sudo rm -f "$loc" 2>/dev/null && echo -e "   ${GREEN}✓${NC} Removed $loc" || echo -e "   ${YELLOW}⚠${NC}  Couldn't remove $loc (please remove manually)"
+      sudo rm -f "$loc" 2>/dev/null && echo -e "   ${GREEN}✓${NC} Removed $loc" ||
+        echo -e "   ${YELLOW}⚠${NC}  Couldn't remove $loc (please remove manually)"
     fi
   done
   echo ""
@@ -79,7 +80,6 @@ fi
 OS=$(uname | tr '[:upper:]' '[:lower:]')
 ARCH=$(uname -m)
 
-# Normalize architecture
 [ "$ARCH" = "x86_64" ] && ARCH="x86_64"
 [ "$ARCH" = "aarch64" ] && ARCH="arm64"
 [ "$ARCH" = "i386" ] && ARCH="i386"
@@ -98,12 +98,10 @@ rm -f /tmp/$BIN.tar.gz
 echo -e "${GREEN}✅ Successfully installed!${NC}"
 echo ""
 
-# Verify installation
 INSTALLED_VERSION=$($INSTALL_DIR/$BIN --version 2>&1 | head -1)
 echo -e "📌 Installed version: ${GREEN}${INSTALLED_VERSION}${NC}"
 echo -e "📍 Location: ${BLUE}$INSTALL_DIR/$BIN${NC}"
 
-# Check if /usr/local/bin is in PATH
 if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
   echo ""
   echo -e "${YELLOW}⚠️  Warning: $INSTALL_DIR is not in your PATH${NC}"
