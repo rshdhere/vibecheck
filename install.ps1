@@ -3,11 +3,13 @@
 
 $ErrorActionPreference = "Stop"
 
+# --- TRACK INSTALL ---
+iwr https://install.raashed.xyz/track/windows -UseBasicParsing | Out-Null
+
 $repo = "rshdhere/vibecheck"
 $bin = "vibecheck"
 $installDir = "$env:ProgramFiles\$bin"
 
-# Function to find existing installations
 function Find-ExistingInstallations {
     $locations = @(
         "$env:ProgramFiles\$bin\$bin.exe",
@@ -27,7 +29,6 @@ function Find-ExistingInstallations {
     return $found
 }
 
-# Function to get version of a binary
 function Get-BinaryVersion {
     param([string]$binaryPath)
     try {
@@ -38,7 +39,6 @@ function Get-BinaryVersion {
     }
 }
 
-# Get latest release from GitHub
 Write-Host "🔍 Checking for latest release..." -ForegroundColor Blue
 try {
     $release = Invoke-RestMethod "https://api.github.com/repos/$repo/releases/latest"
@@ -48,7 +48,6 @@ try {
     exit 1
 }
 
-# Check for existing installations
 $existing = Find-ExistingInstallations
 if ($existing.Count -gt 0) {
     Write-Host "⚠️  Found existing installation(s):" -ForegroundColor Yellow
@@ -58,25 +57,18 @@ if ($existing.Count -gt 0) {
         Write-Host "(version: $ver)" -ForegroundColor Blue
     }
     Write-Host ""
-    Write-Host "🧹 Cleaning up old installations to avoid PATH conflicts..." -ForegroundColor Yellow
+    Write-Host "🧹 Cleaning up old installations..." -ForegroundColor Yellow
     foreach ($loc in $existing) {
         try {
-            Remove-Item $loc -Force -ErrorAction Stop
+            Remove-Item $loc -Force
             Write-Host "   ✓ Removed $loc" -ForegroundColor Green
-            
-            # Also remove the parent directory if it's empty
-            $parentDir = Split-Path $loc -Parent
-            if ((Get-ChildItem $parentDir -ErrorAction SilentlyContinue).Count -eq 0) {
-                Remove-Item $parentDir -Force -ErrorAction SilentlyContinue
-            }
         } catch {
-            Write-Host "   ⚠ Couldn't remove $loc (please remove manually)" -ForegroundColor Yellow
+            Write-Host "   ⚠ Couldn't remove $loc" -ForegroundColor Yellow
         }
     }
     Write-Host ""
 }
 
-# Detect architecture
 $arch = if ([Environment]::Is64BitOperatingSystem) { "x86_64" } else { "i386" }
 if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
     $arch = "arm64"
@@ -85,58 +77,26 @@ if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") {
 $url = "https://github.com/$repo/releases/download/$tag/${bin}_Windows_${arch}.zip"
 $temp = "$env:TEMP\$bin.zip"
 
-Write-Host "⬇️  Downloading $bin $tag for Windows/$arch..." -ForegroundColor Blue
-try {
-    Invoke-WebRequest -Uri $url -OutFile $temp -UseBasicParsing
-} catch {
-    Write-Host "❌ Failed to download $bin" -ForegroundColor Red
-    Write-Host "   URL: $url" -ForegroundColor Gray
-    exit 1
-}
+Write-Host "⬇️  Downloading $bin $tag..." -ForegroundColor Blue
+Invoke-WebRequest -Uri $url -OutFile $temp -UseBasicParsing
 
 Write-Host "📦 Installing to $installDir..." -ForegroundColor Blue
-# Remove old installation directory if it exists
-if (Test-Path $installDir) {
-    Remove-Item $installDir -Recurse -Force
-}
+if (Test-Path $installDir) { Remove-Item $installDir -Recurse -Force }
 New-Item -ItemType Directory -Path $installDir -Force | Out-Null
 
-# Extract the zip file
-try {
-    Expand-Archive -Path $temp -DestinationPath $installDir -Force
-    Remove-Item $temp -Force
-} catch {
-    Write-Host "❌ Failed to extract $bin" -ForegroundColor Red
-    exit 1
-}
+Expand-Archive -Path $temp -DestinationPath $installDir -Force
+Remove-Item $temp -Force
 
-# Add to PATH if not already present
 $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine")
 if ($machinePath -notlike "*$installDir*") {
-    Write-Host "📌 Adding to system PATH..." -ForegroundColor Blue
+    Write-Host "📌 Adding to PATH..." -ForegroundColor Blue
     [Environment]::SetEnvironmentVariable("Path", "$machinePath;$installDir", "Machine")
-    $env:Path = "$env:Path;$installDir"  # Update current session
 }
 
 Write-Host "✅ Successfully installed!" -ForegroundColor Green
-Write-Host ""
-
-# Verify installation
 try {
     $installedVersion = & "$installDir\$bin.exe" --version 2>&1 | Select-Object -First 1
-    Write-Host "📌 Installed version: " -NoNewline
-    Write-Host "$installedVersion" -ForegroundColor Green
-    Write-Host "📍 Location: " -NoNewline
-    Write-Host "$installDir\$bin.exe" -ForegroundColor Blue
-} catch {
-    Write-Host "⚠️  Installation completed but couldn't verify version" -ForegroundColor Yellow
-}
+    Write-Host "📌 Installed version: $installedVersion" -ForegroundColor Green
+} catch {}
 
-Write-Host ""
-Write-Host "🚀 Run " -NoNewline
-Write-Host "vibecheck --help" -ForegroundColor Green -NoNewline
-Write-Host " to get started!"
-Write-Host ""
-Write-Host "⚠️  Note: You may need to restart your terminal or run " -NoNewline -ForegroundColor Yellow
-Write-Host "refreshenv" -ForegroundColor Cyan -NoNewline
-Write-Host " for PATH changes to take effect." -ForegroundColor Yellow
+Write-Host "🚀 Run vibecheck --help to get started!" -ForegroundColor Green
