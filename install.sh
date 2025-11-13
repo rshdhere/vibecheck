@@ -1,4 +1,11 @@
 #!/usr/bin/env bash
+
+# --- FORCE BASH EVEN IF USER RUNS VIA ZSH ---
+# macOS uses zsh by default and will break bash features
+if [ -n "$ZSH_VERSION" ]; then
+  exec bash "$0" "$@"
+fi
+
 set -e
 
 REPO="rshdhere/vibecheck"
@@ -85,7 +92,10 @@ ARCH=$(uname -m)
 [ "$ARCH" = "i386" ] && ARCH="i386"
 [ "$ARCH" = "i686" ] && ARCH="i386"
 
-URL="https://github.com/$REPO/releases/download/$TAG/${BIN}_${OS^}_${ARCH}.tar.gz"
+# --- FIXED: BASH-ONLY UPPERCASE BROKE ON MAC ZSH ---
+OS_UC=$(echo "$OS" | tr '[:lower:]' '[:upper:]')
+URL="https://github.com/$REPO/releases/download/$TAG/${BIN}_${OS_UC}_${ARCH}.tar.gz"
+# -----------------------------------------------
 
 echo -e "${BLUE}⬇️  Downloading $BIN $TAG for $OS/$ARCH...${NC}"
 curl -fsSL "$URL" -o /tmp/$BIN.tar.gz
