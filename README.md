@@ -143,4 +143,4 @@ vibecheck upgrade
 > **Free API Keys :** A quick walk through by a contributor, over how to actually get an API key
 
 [gemini.webm](https://github.com/user-attachments/assets/ee457c89-d071-45cd-880d-45b3aa6c7b3a)
-[perplexity.webm](https://github.com/user-attachments/assets/0ea59ce5-9da4-4d34-babb-c20b5f1bc611)
+[perplexity-api-guide](https://github.com/user-attachments/assets/15c26650-70c9-4864-9a9b-6874cf5c435d)
