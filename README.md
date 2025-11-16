@@ -135,3 +135,7 @@ vibecheck upgrade
 
 [gemini.webm](https://github.com/user-attachments/assets/ee457c89-d071-45cd-880d-45b3aa6c7b3a)
 
+[perplexity](https://github.com/user-attachments/assets/a85ef1eb-7f0a-466a-be39-5a8d42cb347c)
+
+
+
