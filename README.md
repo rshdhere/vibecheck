@@ -1,5 +1,3 @@
-![Downloads](https://img.shields.io/badge/dynamic/json?url=https://install.raashed.xyz/downloads&label=Downloads&query=count&color=cyan)
-
 # vibecheck
 
 A Cross-Platform Command-Line AI-tool for automating git commit messages by outsourcing them to LLMs. Supports multiple providers including OpenAI, Gemini, Anthropic, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
