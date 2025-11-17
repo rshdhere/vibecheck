@@ -42,5 +42,5 @@ func init() {
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	// Make version flag available for all subcommands
-	rootCmd.SetVersionTemplate("{{.Version}}\n")
+	rootCmd.SetVersionTemplate("vibecheck version {{.Version}}\n")
 }
