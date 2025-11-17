@@ -25,6 +25,7 @@ import (
 	_ "github.com/rshdhere/vibecheck/internal/llm/perplexity"
 	_ "github.com/rshdhere/vibecheck/internal/llm/qwen"
 	"github.com/rshdhere/vibecheck/internal/stats"
+	"github.com/rshdhere/vibecheck/internal/ui/notify"
 	"github.com/spf13/cobra"
 )
 
@@ -44,6 +45,10 @@ var commitCmd = &cobra.Command{
 		diff, err := git.StagedDiff(cmd.Context())
 		if err != nil {
 			return fmt.Errorf("staged changes: %w", err)
+		}
+		if strings.TrimSpace(diff) == "" {
+			notify.ShowStageReminder()
+			return nil
 		}
 
 		additionalPrompt, err := cmd.Flags().GetString(promptFlagName)
@@ -75,6 +80,15 @@ var commitCmd = &cobra.Command{
 		message, err := provider.GenerateCommitMessage(ctx, diff, additionalPrompt)
 		latency := time.Since(startTime).Seconds()
 		if err != nil {
+			s.Stop()
+			if envVar := detectMissingEnvVar(err); envVar != "" {
+				notify.ShowMissingAPIKey(providerName, envVar)
+				return nil
+			}
+			if model := detectMissingModel(err); model != "" {
+				notify.ShowMissingModel(providerName, model)
+				return nil
+			}
 			return fmt.Errorf("generated commit message: %w", err)
 		}
 		s.Stop()
@@ -113,4 +127,31 @@ func init() {
 	// commitCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	commitCmd.Flags().String(promptFlagName, "", "used to provide additional context to llm")
 	commitCmd.Flags().String(providerFlagName, config.GetDefaultProvider(), fmt.Sprintf("used to select a particular ai-provider: %v (use 'vibecheck models' to change default)", strings.Join(llm.GetRegisteredNames(), ",")))
+}
+
+func detectMissingEnvVar(err error) string {
+	const suffix = " environment variable not set"
+	msg := err.Error()
+	if !strings.HasSuffix(msg, suffix) {
+		return ""
+	}
+	return strings.TrimSpace(strings.TrimSuffix(msg, suffix))
+}
+
+func detectMissingModel(err error) string {
+	msg := err.Error()
+	if !strings.Contains(msg, "model '") || !strings.Contains(msg, "' not found") {
+		return ""
+	}
+
+	start := strings.Index(msg, "model '")
+	if start == -1 {
+		return ""
+	}
+	start += len("model '")
+	end := strings.Index(msg[start:], "'")
+	if end == -1 {
+		return ""
+	}
+	return msg[start : start+end]
 }
