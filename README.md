@@ -129,9 +129,12 @@ vibecheck upgrade
 ## Configuration
 
 
-> **Free API Keys :** A quick walk through by a contributor, over how to actually get an API key
+> **Obtaining API Credentials :** A Contributor’s Guide to Access the Free-tier
 
-[gemini.webm](https://github.com/user-attachments/assets/ee457c89-d071-45cd-880d-45b3aa6c7b3a)
+
+
+[gemini.webm](https://github.com/user-attachments/assets/81048ed6-736d-493d-86cd-f791ea93da15)
+
 
 [perplexity](https://github.com/user-attachments/assets/a85ef1eb-7f0a-466a-be39-5a8d42cb347c)
 
