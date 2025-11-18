@@ -176,10 +176,16 @@ func (m dashboardModel) View() string {
 		commitsContent += "\n" + commitItemStyle.Render("No commits yet")
 	} else {
 		for _, commit := range m.recentCommits {
+			// Format latency and model display
+			latencyStyle := lipgloss.NewStyle().
+				Foreground(mutedColor).
+				Italic(true)
+
 			commitsContent += "\n" + fmt.Sprintf(
-				"%s %s",
+				"%s %s %s",
 				commitCheckStyle.Render("✓"),
 				commitItemStyle.Render(commit.CommitMsg),
+				latencyStyle.Render(fmt.Sprintf("(%s, %.1fs)", commit.Model, commit.Latency)),
 			)
 		}
 	}
