@@ -48,23 +48,161 @@ vibecheck models
 >
 ![models](https://github.com/user-attachments/assets/d9aa6645-5876-427f-8633-310be70dbfe8)
 
+```mermaid
 
-## Supported Models
+flowchart TD
 
-All models are selected for cost-efficiency and quality comparable to GPT-4o-mini:
+    %% Nodes Styling
 
-| Provider   | Model                   | Cost-Efficiency | Speed      |
-| ---------- | ----------------------- | --------------- | ---------- |
-| OpenAI     | gpt-4o-mini             | High            | Fast       |
-| Gemini     | gemini-2.5-flash        | Very High       | Ultra-Fast |
-| Anthropic  | claude-3.5-haiku        | High            | Fast       |
-| Groq       | llama-3.3-70b-versatile | Very High       | Ultra      |
-| xAI        | grok-beta               | High            | Fast       |
-| Kimi       | moonshot-v1-auto        | Very High       | Ultra-Fast |
-| Qwen       | qwen-turbo              | Very High       | Ultra-Fast |
-| DeepSeek   | deepseek-chat           | Extremely High  | Ultra-Fast |
-| Perplexity | sonar                   | High            | Fast       |
-| Ollama     | gpt-oss:20b             | Free (Local)    | Medium     |
+    classDef user fill:#f9f,stroke:#333,stroke-width:2px,color:black;
+
+    classDef system fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:black;
+
+    classDef external fill:#fff9c4,stroke:#fbc02d,stroke-width:2px,color:black;
+
+    classDef error fill:#ffcdd2,stroke:#c62828,stroke-width:2px,color:black;
+
+
+
+    Start([User Action]) --> InstallCheck{Is vibecheck installed?}
+
+    class Start user
+
+
+
+    %% Installation Branch
+
+    InstallCheck -- No --> OS{Select OS}
+
+    OS -- macOS/Linux --> Curl[Run curl command]
+
+    OS -- Windows --> PS[Run PowerShell as Admin]
+
+    OS -- macOS Brew --> Brew[Run brew install]
+
+    Curl & PS & Brew --> Config[Setup API Keys]
+
+    Config --> EnvVars[Export vars OR .env file]
+
+
+
+    %% Main Execution
+
+    InstallCheck -- Yes --> Command{Run Command}
+
+    EnvVars -.-> Command
+
+
+
+    %% Branch: UPGRADE
+
+    Command -- "vibecheck upgrade" --> PermCheck{Protected Dir?}
+
+    PermCheck -- Yes --> Sudo[Auto-run with Sudo] --> UpdateBin[Download & Replace Binary]
+
+    PermCheck -- No --> UpdateBin
+
+    UpdateBin --> End([Done])
+
+
+
+    %% Branch: DASHBOARD/MODELS
+
+    Command -- "vibecheck dashboard" --> ShowDash[Read Logs] --> DisplayStats[Show Commits & $$ Saved] --> End
+
+    Command -- "vibecheck models" --> ShowMods[List Supported Models] --> SwitchMod[Switch Model Preference] --> End
+
+
+
+    %% Branch: COMMIT (Core Feature)
+
+    Command -- "vibecheck commit" --> GitCheck{Files Staged?}
+
+    
+
+    %% Git Check Logic
+
+    GitCheck -- No --> ErrStage[Error: Stage files first!]:::error
+
+    ErrStage --> End
+
+    
+
+    GitCheck -- Yes --> KeyCheck{API Key Found?}
+
+    KeyCheck -- No --> ErrKey[Error: Missing Env Var]:::error
+
+    ErrKey --> Config
+
+    
+
+    KeyCheck -- Yes --> ProviderSelect{Provider Flag?}
+
+    
+
+    %% Provider Logic
+
+    ProviderSelect -- Default --> DefModel[Default Model]
+
+    ProviderSelect -- "--provider X" --> SelectModel[Select Specific Provider]
+
+    
+
+    subgraph AI_Providers [External AI Cloud / Local]
+
+        direction LR
+
+        OpenAI
+
+        Gemini
+
+        Anthropic
+
+        Groq
+
+        XAI_Grok
+
+        Kimi
+
+        Qwen
+
+        DeepSeek
+
+        Perplexity
+
+        Ollama_Local
+
+    end
+
+    class AI_Providers external
+
+
+
+    %% Context Injection
+
+    SelectModel & DefModel --> PromptCheck{Custom Prompt?}
+
+    PromptCheck -- Yes --> InjectContext[Inject User Context]
+
+    PromptCheck -- No --> GenPayload[Prepare Diff Payload]
+
+    
+
+    InjectContext & GenPayload --> AI_Providers
+
+    
+
+    %% Output
+
+    AI_Providers --> Response[Receive Generated Message]
+
+    Response --> Display[Output to Terminal]
+
+    Display --> SaveLog[Update Dashboard Stats]
+
+    SaveLog --> End
+
+```
 
 ## Environment Variables
 
