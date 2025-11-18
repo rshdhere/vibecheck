@@ -16,10 +16,10 @@ iwr https://install.raashed.xyz/install.ps1 -useb | iex
 > **Important :** Make sure to run the command as an `administrator` using Powershell.
 ### macOS (brew)
 ```bash
-brew tap rshdhere/vibecheck
-brew install --cask vibecheck
+brew install vibecheck
 ```
-> **Note :** Direct install via `brew install vibecheck` is comming soon
+>  <img width="725" height="500" alt="image" src="https://github.com/user-attachments/assets/175572fa-c283-435b-b3c1-9dac2e5232cd" />
+
 
 
 ## The Ultimate One Liner
