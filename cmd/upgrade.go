@@ -21,6 +21,8 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
+
+	"github.com/rshdhere/vibecheck/internal/ui/banner"
 )
 
 const (
@@ -88,6 +90,8 @@ var upgradeCmd = &cobra.Command{
 
 		if currentVersion == latestVersion {
 			fmt.Printf("✅ Already on the latest version: %s\n", version)
+			fmt.Println()
+			banner.Print()
 			return nil
 		}
 
@@ -138,7 +142,8 @@ var upgradeCmd = &cobra.Command{
 
 		s.Stop()
 		fmt.Printf("Successfully upgraded to version %s!\n", release.TagName)
-		fmt.Printf("   Run 'vibecheck --version' to verify.\n")
+		fmt.Printf("   Run 'vibecheck --version' to verify.\n\n")
+		banner.Print()
 
 		return nil
 	},
