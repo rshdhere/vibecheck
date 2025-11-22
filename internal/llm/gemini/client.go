@@ -4,9 +4,9 @@ package gemini
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/google/generative-ai-go/genai"
+	"github.com/rshdhere/vibecheck/internal/keys"
 	"github.com/rshdhere/vibecheck/internal/llm"
 	"google.golang.org/api/option"
 )
@@ -18,7 +18,7 @@ func init() {
 }
 
 func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
-	key, exists := os.LookupEnv("GEMINI_API_KEY")
+	key, exists := keys.GetAPIKey("gemini")
 	if !exists {
 		return "", fmt.Errorf("GEMINI_API_KEY environment variable not set")
 	}

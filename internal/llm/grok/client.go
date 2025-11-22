@@ -4,10 +4,10 @@ package grok
 import (
 	"context"
 	"fmt"
-	"os"
 
 	openaisdk "github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
+	"github.com/rshdhere/vibecheck/internal/keys"
 	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
@@ -18,7 +18,7 @@ func init() {
 }
 
 func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
-	key, exists := os.LookupEnv("XAI_API_KEY")
+	key, exists := keys.GetAPIKey("grok")
 	if !exists {
 		return "", fmt.Errorf("XAI_API_KEY environment variable not set")
 	}

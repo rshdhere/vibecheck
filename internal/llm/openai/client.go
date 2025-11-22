@@ -4,10 +4,10 @@ package openai
 import (
 	"context"
 	"fmt"
-	"os"
 
 	openaisdk "github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
+	"github.com/rshdhere/vibecheck/internal/keys"
 	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
@@ -18,7 +18,10 @@ func init() {
 }
 
 func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
-	key, _ := os.LookupEnv("OPENAI_API_KEY")
+	key, exists := keys.GetAPIKey("openai")
+	if !exists {
+		return "", fmt.Errorf("OPENAI_API_KEY environment variable not set")
+	}
 	client := openaisdk.NewClient(
 		option.WithAPIKey(key),
 	)

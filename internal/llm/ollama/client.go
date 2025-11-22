@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
+	"github.com/rshdhere/vibecheck/internal/keys"
 	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
@@ -38,7 +38,7 @@ func init() {
 }
 
 func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
-	baseURL, exists := os.LookupEnv("OLLAMA_HOST")
+	baseURL, exists := keys.GetAPIKey("ollama")
 	if !exists {
 		baseURL = "http://localhost:11434"
 	}

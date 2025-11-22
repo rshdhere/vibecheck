@@ -23,8 +23,8 @@ func ShowStageReminder() {
 
 func ShowMissingAPIKey(providerName, envVar string) {
 	title := fmt.Sprintf("%s API KEY REQUIRED !!", strings.ToUpper(providerName))
-	description := fmt.Sprintf("Set %s in your environment before running `vibecheck commit`.", envVar)
-	hint := fmt.Sprintf("Example: export %s=your_key_here", envVar)
+	description := fmt.Sprintf("Set %s in your environment or use `vibecheck keys` to store it globally.", envVar)
+	hint := fmt.Sprintf("Run: vibecheck keys  OR  export %s=your_key_here", envVar)
 
 	m := messageModel{
 		title:       title,
@@ -32,7 +32,7 @@ func ShowMissingAPIKey(providerName, envVar string) {
 		hint:        hint,
 	}
 
-	fallback := fmt.Sprintf("%s Please set %s and rerun `vibecheck commit`.", title, envVar)
+	fallback := fmt.Sprintf("%s Please set %s (via `vibecheck keys` or export) and rerun `vibecheck commit`.", title, envVar)
 	runProgram(m, fallback)
 }
 

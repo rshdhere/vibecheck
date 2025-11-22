@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 
+	"github.com/rshdhere/vibecheck/internal/keys"
 	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
@@ -41,7 +41,7 @@ type chatResponse struct {
 }
 
 func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
-	key, exists := os.LookupEnv("QWEN_API_KEY")
+	key, exists := keys.GetAPIKey("qwen")
 	if !exists {
 		return "", fmt.Errorf("QWEN_API_KEY environment variable not set")
 	}

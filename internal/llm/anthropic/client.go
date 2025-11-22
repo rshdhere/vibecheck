@@ -4,10 +4,10 @@ package anthropic
 import (
 	"context"
 	"fmt"
-	"os"
 
 	anthropicsdk "github.com/anthropics/anthropic-sdk-go"
 	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/rshdhere/vibecheck/internal/keys"
 	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
@@ -18,7 +18,7 @@ func init() {
 }
 
 func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error) {
-	key, exists := os.LookupEnv("ANTHROPIC_API_KEY")
+	key, exists := keys.GetAPIKey("anthropic")
 	if !exists {
 		return "", fmt.Errorf("ANTHROPIC_API_KEY environment variable not set")
 	}
