@@ -43,6 +43,14 @@ vibecheck dashboard
 ![dashboard-cut](https://github.com/user-attachments/assets/e45d09f6-bc3a-41cf-a8aa-d26e21a04880)
 
 ```bash
+vibecheck keys
+```
+
+> **Keys :** It keeps your keys globally accessable to vibecheck, so that you always dont have to introduce a environmental variable
+>
+![vibecheck-keys](https://github.com/user-attachments/assets/815f6ef9-55db-4eca-99d9-7e09957f0a81)
+
+```bash
 vibecheck models
 ```
 > **Models :** You can switch the models for better latency and accuracy all along
