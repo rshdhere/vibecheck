@@ -93,6 +93,10 @@ flowchart TD
 
     Config --> EnvVars[Export vars OR .env file]
 
+    Config --> KeysCmd[vibecheck keys]
+
+    KeysCmd --> KeysFile[Store in ~/.vibecheck_keys.json]
+
 
 
     %% Main Execution
@@ -100,6 +104,8 @@ flowchart TD
     InstallCheck -- Yes --> Command{Run Command}
 
     EnvVars -.-> Command
+
+    KeysFile -.-> Command
 
 
 
@@ -115,11 +121,13 @@ flowchart TD
 
 
 
-    %% Branch: DASHBOARD/MODELS
+    %% Branch: DASHBOARD/MODELS/KEYS
 
     Command -- "vibecheck dashboard" --> ShowDash[Read Logs] --> DisplayStats[Show Commits & $$ Saved] --> End
 
     Command -- "vibecheck models" --> ShowMods[List Supported Models] --> SwitchMod[Switch Model Preference] --> End
+
+    Command -- "vibecheck keys" --> KeysUI[Interactive Keys Manager] --> KeysList[List Providers with Status] --> KeysEdit[Add/Edit/Delete Keys] --> KeysSave[Save to ~/.vibecheck_keys.json] --> End
 
 
 
@@ -139,13 +147,18 @@ flowchart TD
 
     GitCheck -- Yes --> KeyCheck{API Key Found?}
 
-    KeyCheck -- No --> ErrKey[Error: Missing Env Var]:::error
+    %% Key Lookup Priority
+    KeyCheck --> CheckEnv{Check .env file}
+    CheckEnv -- Found --> KeyFound[Use Key]
+    CheckEnv -- Not Found --> CheckExport{Check export vars}
+    CheckExport -- Found --> KeyFound
+    CheckExport -- Not Found --> CheckKeysFile{Check vibecheck keys}
+    CheckKeysFile -- Found --> KeyFound
+    CheckKeysFile -- Not Found --> ErrKey[Error: Missing API Key]:::error
 
     ErrKey --> Config
 
-    
-
-    KeyCheck -- Yes --> ProviderSelect{Provider Flag?}
+    KeyFound --> ProviderSelect{Provider Flag?}
 
     
 
