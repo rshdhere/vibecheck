@@ -1,4 +1,7 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/rshdhere/vibecheck)](https://goreportcard.com/report/github.com/rshdhere/vibecheck)
+
 <img width="506" height="114" alt="ascii-art-text" src="https://github.com/user-attachments/assets/2391e58e-5646-4c1a-a624-23ebb0dde208" />
+
 
 
 A Cross-Platform Command-Line AI-tool for automating git commit messages by outsourcing them to LLMs. Supports multiple providers including OpenAI, Gemini, Anthropic, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
