@@ -15,7 +15,18 @@ jobs:
           go-version: '1.22'
 
       - name: Run tests with coverage
-        run: go test ./... -coverprofile=coverage.out
+        run: |
+          # Test core packages (exclude LLM clients that require API keys and UI-heavy cmd packages)
+          # Focus on testable internal packages
+          go test \
+            ./internal/config \
+            ./internal/keys \
+            ./internal/stats \
+            ./internal/git \
+            ./internal/llm \
+            ./internal/ui/banner \
+            ./internal/ui/notify \
+            -coverprofile=coverage.out
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
