@@ -8,12 +8,6 @@
 
 A Cross-Platform Command-Line AI-tool for automating git commit messages by outsourcing them to LLMs. Supports multiple providers including OpenAI, Gemini, Anthropic, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
 
-> **pkg.go.dev :** https://pkg.go.dev/github.com/rshdhere/vibecheck
-
-> **coverage service :** https://app.codecov.io/gh/rshdhere/vibecheck
-
-> **goreportcard :** https://goreportcard.com/report/github.com/rshdhere/vibecheck
-
 ## Installation
 ### macOS/linux
 ```bash
@@ -308,6 +302,12 @@ vibecheck upgrade
 
 
 [perplexity](https://github.com/user-attachments/assets/a85ef1eb-7f0a-466a-be39-5a8d42cb347c)
+
+https://pkg.go.dev/github.com/rshdhere/vibecheck
+
+https://app.codecov.io/gh/rshdhere/vibecheck
+
+https://goreportcard.com/report/github.com/rshdhere/vibecheck
 
 
 
