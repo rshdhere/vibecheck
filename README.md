@@ -9,6 +9,11 @@
 A Cross-Platform Command-Line AI-tool for automating git commit messages by outsourcing them to LLMs. Supports multiple providers including OpenAI, Gemini, Anthropic, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity Sonar, and Ollama.
 
 ## Installation
+
+### macOS (brew)
+```bash
+brew install vibecheck
+```
 ### macOS/linux
 ```bash
 curl -fsSL https://install.raashed.xyz | bash
@@ -20,12 +25,6 @@ iwr https://install.raashed.xyz/install.ps1 -useb | iex
 ```
 
 > **Important :** Make sure to run the command as an `administrator` using Powershell.
-### macOS (brew)
-```bash
-brew install vibecheck
-```
->  <img width="725" height="500" alt="image" src="https://github.com/user-attachments/assets/175572fa-c283-435b-b3c1-9dac2e5232cd" />
-
 
 
 ## The Ultimate One Liner
