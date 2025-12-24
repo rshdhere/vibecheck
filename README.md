@@ -1,8 +1,12 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/rshdhere/vibecheck)](https://goreportcard.com/report/github.com/rshdhere/vibecheck)
-[![codecov](https://codecov.io/gh/rshdhere/vibecheck/branch/main/graph/badge.svg)](https://codecov.io/gh/rshdhere/vibecheck)
 
+<p align="center">
+  <img
+    src="https://github.com/user-attachments/assets/0fdf30b9-7226-49c1-a776-5593f62e8d18"
+    width="800"
+  />
+</p>
 
-<img width="506" height="114" alt="ascii-art-text" src="https://github.com/user-attachments/assets/2391e58e-5646-4c1a-a624-23ebb0dde208" />
 
 
 
