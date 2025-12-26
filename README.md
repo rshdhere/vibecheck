@@ -1,12 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/rshdhere/vibecheck)](https://goreportcard.com/report/github.com/rshdhere/vibecheck)
 
-<p align="center">
-  <img
-    src="https://github.com/user-attachments/assets/0fdf30b9-7226-49c1-a776-5593f62e8d18"
-    width="800"
-  />
-</p>
-
+![refine-vibe-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/b0c5e401-a48e-4e7b-9d18-1f2a6c396296)
 
 
 
