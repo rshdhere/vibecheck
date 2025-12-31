@@ -88,3 +88,13 @@ homebrew_casks:
       name: "Vibecheck Bot"
       email: "bot@vibecheck.sh"
     commit_msg_template: "chore(brew): update vibecheck to {{ .Tag }}"
+
+signs:
+  - artifacts: checksum
+    cmd: cosign
+    args:
+      - sign-blob
+      - "--yes"
+      - "--output-signature=${signature}"
+      - "--output-certificate=${certificate}"
+      - "${artifact}"
