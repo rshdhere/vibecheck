@@ -4,10 +4,10 @@
 
 We actively support and provide security updates for the following versions:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| Latest  | Yes                |
-| < Latest| No                 |
+| Version  | Supported |
+| -------- | --------- |
+| Latest   | Yes       |
+| < Latest | No        |
 
 ## Reporting a Vulnerability
 
@@ -15,14 +15,20 @@ We take the security of Vibecheck seriously. If you discover a security vulnerab
 
 ### How to Report
 
-1. **Do not** open a public GitHub issue for security vulnerabilities
-2. Email security details to: [security contact email]
-3. Include the following information:
-   - Description of the vulnerability
-   - Steps to reproduce the issue
-   - Potential impact of the vulnerability
-   - Suggested fix (if you have one)
-   - Your contact information
+1. **Do not** open a public GitHub issue for security vulnerabilities.
+2. Report the issue privately using GitHub Security Advisories:  
+   https://github.com/rshdhere/vibecheck/security/advisories/new
+3. Alternatively, email security details to:  
+   **raashed.aws@gmail.com**
+
+All security reports must be submitted privately using the methods above.
+
+Include the following information:
+- Description of the vulnerability
+- Steps to reproduce the issue
+- Potential impact of the vulnerability
+- Suggested fix (if you have one)
+- Your contact information
 
 ### What to Expect
 
@@ -51,10 +57,10 @@ When using Vibecheck:
 
 ## Known Security Considerations
 
-- API keys are stored locally in `~/.vibecheck_keys.json` - ensure proper file permissions
+- API keys are stored locally in `~/.vibecheck_keys.json` — ensure proper file permissions
 - Environment variables may be visible in process lists
-- Generated commit messages may contain information from your codebase - review before committing
-- Network requests are made to external LLM providers - ensure you trust the provider
+- Generated commit messages may contain information from your codebase — review before committing
+- Network requests are made to external LLM providers — ensure you trust the provider
 
 ## Security Updates
 
@@ -66,7 +72,7 @@ Security updates will be released as soon as possible after a vulnerability is c
 
 ## Scope
 
-The following are considered in-scope for security reporting:
+### In Scope
 
 - Remote code execution vulnerabilities
 - Authentication and authorization bypasses
@@ -76,18 +82,17 @@ The following are considered in-scope for security reporting:
 - Path traversal issues
 - Denial of service vulnerabilities
 
-The following are generally considered out-of-scope:
+### Out of Scope
 
-- Issues requiring physical access to the device
+- Issues requiring physical access
 - Issues requiring social engineering
-- Issues in third-party dependencies (please report to the upstream project)
-- Issues that require already compromised user accounts
+- Issues in third-party dependencies (please report upstream)
+- Issues requiring already compromised accounts
 - Self-XSS vulnerabilities
 - Issues requiring very unlikely user interaction
 
 ## Contact
 
-For security-related concerns, please contact the maintainers through the appropriate channels as outlined above.
+For security-related concerns, use GitHub Security Advisories or email **raashed.aws@gmail.com**.
 
 Thank you for helping keep Vibecheck and its users safe.
-
