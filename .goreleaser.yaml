@@ -1,0 +1,86 @@
+# GoReleaser configuration for vibecheck
+# Docs: https://goreleaser.com
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: vibecheck
+    main: .
+    binary: vibecheck
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X github.com/rshdhere/vibecheck/cmd.version={{.Version}}
+
+archives:
+  - id: vibecheck-archive
+    formats: [tar.gz]
+    ids: [vibecheck] # ✅ replaces "builds"
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - LICENSE
+      - README.md
+      - install.sh
+      - install.ps1
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  footer: >-
+
+    ---
+
+    Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+
+checksum:
+  name_template: "checksums.txt"
+
+homebrew_casks:
+  - name: vibecheck
+    binaries: ["vibecheck"] # ✅ plural form per v2.12.6 notice
+    repository:
+      owner: rshdhere
+      name: homebrew-vibecheck
+    homepage: "https://github.com/rshdhere/vibecheck"
+    description: "🌊 Vibecheck — AI-powered Git commit assistant."
+    license: "MIT"
+    url:
+      verified: github.com/rshdhere/vibecheck
+
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/vibecheck"]
+          end
+
+    commit_author:
+      name: "Vibecheck Bot"
+      email: "bot@vibecheck.sh"
+    commit_msg_template: "chore(brew): update vibecheck to {{ .Tag }}"
