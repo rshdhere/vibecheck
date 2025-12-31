@@ -178,6 +178,20 @@ If you have questions about contributing:
 - Check existing issues and discussions
 - Review the documentation
 
+## Certificate of Origin
+
+This project uses the Developer Certificate of Origin (DCO).
+
+All contributions must be signed off using:
+
+  git commit -s
+
+This adds a `Signed-off-by:` line to your commit message, certifying that you have the right to submit the code.
+
+More details:
+- https://developercertificate.org/
+- https://docs.github.com/en/get-started/quickstart/github-glossary#dco
+
 ## License
 
 By contributing to Vibecheck, you agree that your contributions will be licensed under the MIT License.
