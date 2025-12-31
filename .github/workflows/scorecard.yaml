@@ -3,15 +3,19 @@ name: OpenSSF Scorecard
 on:
   branch_protection_rule:
   schedule:
-    - cron: '0 0 * * 0' # weekly
+    - cron: '0 0 * * 0'
   push:
     branches: [main]
-
-permissions: read-all
 
 jobs:
   analysis:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
