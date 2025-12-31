@@ -27,7 +27,7 @@ builds:
 archives:
   - id: vibecheck-archive
     formats: [tar.gz]
-    ids: [vibecheck] # ✅ replaces "builds"
+    ids: [vibecheck]
     name_template: >-
       {{ .ProjectName }}_
       {{- title .Os }}_
@@ -63,12 +63,13 @@ checksum:
 
 homebrew_casks:
   - name: vibecheck
-    binaries: ["vibecheck"] # ✅ plural form per v2.12.6 notice
+    binaries: ["vibecheck"]
     repository:
       owner: rshdhere
       name: homebrew-vibecheck
+      token: "{{ .Env.HOMEBREW_GITHUB_TOKEN }}"
     homepage: "https://github.com/rshdhere/vibecheck"
-    description: "🌊 Vibecheck — AI-powered Git commit assistant."
+    description: "Vibecheck — AI-powered Git commit assistant."
     license: "MIT"
     url:
       verified: github.com/rshdhere/vibecheck
