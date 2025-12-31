@@ -9,10 +9,7 @@ permissions:
 
 jobs:
   provenance:
-    permissions:
-      contents: read
-      id-token: write
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.10.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2
     with:
       base64-subjects: |
         ${{ github.repository }}@${{ github.ref }}

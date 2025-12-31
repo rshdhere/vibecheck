@@ -64,6 +64,18 @@ release:
 checksum:
   name_template: "checksums.txt"
 
+signs:
+  - artifacts: checksum
+    id: cosign
+    cmd: cosign
+    args:
+      - sign-blob
+      - --yes
+      - --oidc-issuer=https://token.actions.githubusercontent.com
+      - --output-signature=${signature}
+      - --output-certificate=${certificate}
+      - ${artifact}
+
 homebrew_casks:
   - name: vibecheck
     binaries: ["vibecheck"]
