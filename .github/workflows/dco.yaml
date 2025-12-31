@@ -11,4 +11,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dco-check/dco-check@v2
+      - uses: developer-certificate-of-origin/dco@v1
