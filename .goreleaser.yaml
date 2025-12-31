@@ -67,7 +67,7 @@ homebrew_casks:
     repository:
       owner: rshdhere
       name: homebrew-vibecheck
-      token: "{{ .Env.HOMEBREW_GITHUB_TOKEN }}"
+      token: "{{ .Env.HOMEBREW_TOKEN }}"
     homepage: "https://github.com/rshdhere/vibecheck"
     description: "Vibecheck — AI-powered Git commit assistant."
     license: "MIT"
