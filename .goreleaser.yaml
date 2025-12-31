@@ -3,6 +3,9 @@
 
 version: 2
 
+env:
+  - HOMEBREW_TOKEN
+
 before:
   hooks:
     - go mod tidy
