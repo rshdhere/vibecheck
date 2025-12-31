@@ -7,8 +7,7 @@ on:
 
 permissions:
   contents: write
-  packages: write
-  issues: read
+  id-token: write
 
 jobs:
   release:
