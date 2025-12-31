@@ -1,9 +1,9 @@
-name: Static Analysis
+name: Static Analysis (govulncheck)
 
 on:
-  pull_request:
   push:
     branches: [ main ]
+  pull_request:
 
 permissions:
   contents: read
@@ -11,14 +11,19 @@ permissions:
 jobs:
   govulncheck:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
 
-      - name: Run govulncheck
+      - name: Install govulncheck
         run: |
-          go install golang.org/x/vuln/cmd/govulncheck@latest
-          govulncheck ./...
+          go install golang.org/x/vuln/cmd/govulncheck@v1.1.4
+
+      - name: Run govulncheck
+        run: govulncheck ./...
