@@ -1,4 +1,4 @@
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11674/badge)](https://www.bestpractices.dev/projects/11674)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11674/badge?v=1)](https://www.bestpractices.dev/projects/11674)
 [![Go Report Card](https://goreportcard.com/badge/github.com/rshdhere/vibecheck)](https://goreportcard.com/report/github.com/rshdhere/vibecheck)
 
 ![refine-vibe-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/b0c5e401-a48e-4e7b-9d18-1f2a6c396296)
