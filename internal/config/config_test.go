@@ -161,3 +161,41 @@ func TestSaveWithInvalidPath(t *testing.T) {
 	// Error is expected with invalid path
 	_ = err
 }
+
+// FuzzLoad fuzzes the Load function with arbitrary JSON input
+func FuzzLoad(f *testing.F) {
+	// Seed corpus with valid JSON examples
+	f.Add(`{"default_provider": "openai"}`)
+	f.Add(`{"default_provider": "gemini"}`)
+	f.Add(`{"default_provider": ""}`)
+	f.Add(`{}`)
+	f.Add(`{"default_provider": "a"}`)
+
+	f.Fuzz(func(t *testing.T, jsonData string) {
+		// Set up temporary directory for this fuzz run
+		tmpDir := t.TempDir()
+		oldHome := os.Getenv("HOME")
+		defer os.Setenv("HOME", oldHome)
+		os.Setenv("HOME", tmpDir)
+
+		// Write the fuzzed JSON to config file
+		configPath := filepath.Join(tmpDir, ".vibecheck.json")
+		if err := os.WriteFile(configPath, []byte(jsonData), 0644); err != nil {
+			t.Skipf("Failed to write config file: %v", err)
+		}
+
+		// Load should either succeed or return a parse error, but not panic
+		cfg, err := Load()
+		if err != nil {
+			// Invalid JSON is expected to return an error, which is fine
+			return
+		}
+
+		// If Load succeeded, verify the config is valid
+		if cfg == nil {
+			t.Fatal("Load() returned nil config without error")
+		}
+		// DefaultProvider should be a string (even if empty)
+		_ = cfg.DefaultProvider
+	})
+}

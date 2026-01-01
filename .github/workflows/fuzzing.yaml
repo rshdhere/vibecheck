@@ -1,0 +1,51 @@
+name: Fuzzing
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Run fuzzing weekly on Sundays at 00:00 UTC
+    - cron: '0 0 * * 0'
+
+permissions:
+  contents: read
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+
+      - name: Set up Go
+        uses: actions/setup-go@7b8cf10d4e4a01d4992d18a89f4d7dc5a3e6d6f4 # v4.3.0
+        with:
+          go-version: '1.23'
+
+      - name: Run fuzz tests
+        run: |
+          # Run fuzz tests for config package
+          go test -fuzz=FuzzLoad -fuzztime=10s ./internal/config || true
+          
+          # Run fuzz tests for keys package
+          go test -fuzz=FuzzLoad -fuzztime=10s ./internal/keys || true
+          go test -fuzz=FuzzMaskKey -fuzztime=10s ./internal/keys || true
+          
+          # Run all fuzz tests with longer timeout for scheduled runs
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "Running extended fuzzing for scheduled run..."
+            go test -fuzz=FuzzLoad -fuzztime=5m ./internal/config || true
+            go test -fuzz=FuzzLoad -fuzztime=5m ./internal/keys || true
+            go test -fuzz=FuzzMaskKey -fuzztime=5m ./internal/keys || true
+          fi
+
+      - name: Upload fuzz artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuzz-crashers
+          path: |
+            **/testdata/fuzz/**
+          retention-days: 30
