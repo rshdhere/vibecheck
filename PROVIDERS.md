@@ -6,24 +6,24 @@ This document provides detailed information about all supported AI providers in 
 
 vibecheck supports 10 AI providers, each optimized for cost-efficiency and quality:
 
-1. **OpenAI** - GPT-4o-mini
-2. **Google Gemini** - gemini-2.5-flash
-3. **Anthropic** - Claude 3.5 Haiku
-4. **Groq** - Llama 3.3 70B Versatile
-5. **xAI** - Grok Beta
-6. **Moonshot AI Kimi** - moonshot-v1-auto
-7. **Alibaba Qwen** - qwen-turbo
-8. **DeepSeek** - deepseek-chat
-9. **Perplexity** - sonar
+1. **OpenAI** - gpt-5-mini
+2. **Google Gemini** - gemini-3-flash-preview
+3. **Anthropic** - claude-haiku-4-5-20251001
+4. **Groq** - openai/gpt-oss-20b
+5. **xAI** - grok-4-1-fast-reasoning
+6. **Moonshot AI Kimi** - kimi-k2.5
+7. **Alibaba Qwen** - qwen3-coder-plus
+8. **DeepSeek** - deepseek-chat (V3.2 alias)
+9. **Perplexity** - sonar-pro
 10. **Ollama** - gpt-oss:20b (local)
 
 ---
 
 ## Provider Setup
 
-### 1. OpenAI (GPT-4o-mini)
+### 1. OpenAI (gpt-5-mini)
 
-**Model**: `gpt-4o-mini`  
+**Model**: `gpt-5-mini`  
 **Cost**: $0.15/1M input tokens, $0.60/1M output tokens  
 **Speed**: Fast  
 **API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
@@ -35,9 +35,9 @@ vibecheck commit --provider openai
 
 ---
 
-### 2. Google Gemini (gemini-2.5-flash)
+### 2. Google Gemini (gemini-3-flash-preview)
 
-**Model**: `gemini-2.5-flash`  
+**Model**: `gemini-3-flash-preview`  
 **Cost**: $0.075/1M input tokens, $0.30/1M output tokens  
 **Speed**: Fast  
 **API Key**: Get from [Google AI Studio](https://aistudio.google.com/app/apikey)
@@ -54,9 +54,9 @@ vibecheck commit --provider gemini
 
 ---
 
-### 3. Anthropic (Claude 3.5 Haiku)
+### 3. Anthropic (claude-haiku-4-5-20251001)
 
-**Model**: `claude-3.5-haiku-20241022`  
+**Model**: `claude-haiku-4-5-20251001`  
 **Cost**: $0.80/1M input tokens, $4.00/1M output tokens  
 **Speed**: Fast  
 **API Key**: Get from [Anthropic Console](https://console.anthropic.com/settings/keys)
@@ -73,9 +73,9 @@ vibecheck commit --provider anthropic
 
 ---
 
-### 4. Groq (Llama 3.3 70B Versatile)
+### 4. Groq (openai/gpt-oss-20b)
 
-**Model**: `llama-3.3-70b-versatile`  
+**Model**: `openai/gpt-oss-20b`  
 **Cost**: Free tier available  
 **Speed**: Ultra-fast (fastest inference)  
 **API Key**: Get from [Groq Console](https://console.groq.com/keys)
@@ -93,9 +93,9 @@ vibecheck commit --provider groq
 
 ---
 
-### 5. xAI (Grok Beta)
+### 5. xAI (grok-4-1-fast-reasoning)
 
-**Model**: `grok-beta`  
+**Model**: `grok-4-1-fast-reasoning`  
 **Cost**: Competitive pricing  
 **Speed**: Fast  
 **API Key**: Get from [xAI Console](https://console.x.ai/)
@@ -112,9 +112,9 @@ vibecheck commit --provider grok
 
 ---
 
-### 6. Moonshot AI Kimi (moonshot-v1-auto)
+### 6. Moonshot AI Kimi (kimi-k2.5)
 
-**Model**: `moonshot-v1-auto`  
+**Model**: `kimi-k2.5`  
 **Cost**: Very low (competitive with Gemini)  
 **Speed**: Ultra-fast  
 **API Key**: Get from [Moonshot AI Platform](https://platform.moonshot.cn/)
@@ -133,9 +133,9 @@ vibecheck commit --provider kimi
 
 ---
 
-### 7. Alibaba Qwen (qwen-turbo)
+### 7. Alibaba Qwen (qwen3-coder-plus)
 
-**Model**: `qwen-turbo`  
+**Model**: `qwen3-coder-plus`  
 **Cost**: Very low (extremely competitive)  
 **Speed**: Ultra-fast  
 **API Key**: Get from [Alibaba Cloud DashScope](https://dashscope.aliyun.com/)
@@ -154,9 +154,9 @@ vibecheck commit --provider qwen
 
 ---
 
-### 8. DeepSeek (deepseek-chat)
+### 8. DeepSeek (deepseek-chat, V3.2 alias)
 
-**Model**: `deepseek-chat`  
+**Model**: `deepseek-chat` (DeepSeek-V3.2 alias)  
 **Cost**: Extremely low ($0.14/1M input, $0.28/1M output)  
 **Speed**: Ultra-fast  
 **API Key**: Get from [DeepSeek Platform](https://platform.deepseek.com/)
@@ -175,9 +175,9 @@ vibecheck commit --provider deepseek
 
 ---
 
-### 9. Perplexity (sonar)
+### 9. Perplexity (sonar-pro)
 
-**Model**: `sonar`  
+**Model**: `sonar-pro`  
 **Cost**: ~$0.60/1M input tokens, ~$0.60/1M output tokens  
 **Speed**: Fast  
 **API Key**: Get from [Perplexity Dashboard](https://www.perplexity.ai/settings/api)

@@ -36,11 +36,11 @@ func TestBaseURL(t *testing.T) {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to Groq docs: llama-3.3-70b-versatile is available
+// According to Groq docs: openai/gpt-oss-20b is available
 func TestModelSelection(t *testing.T) {
-	expectedModel := "llama-3.3-70b-versatile"
-	if expectedModel != "llama-3.3-70b-versatile" {
-		t.Errorf("Model should be llama-3.3-70b-versatile, got %s", expectedModel)
+	expectedModel := "openai/gpt-oss-20b"
+	if expectedModel != "openai/gpt-oss-20b" {
+		t.Errorf("Model should be openai/gpt-oss-20b, got %s", expectedModel)
 	}
 }
 

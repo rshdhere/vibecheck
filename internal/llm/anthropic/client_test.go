@@ -30,13 +30,13 @@ func TestAPIKeyValidation(t *testing.T) {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to Anthropic docs: claude-3-5-haiku-20241022 should be used
+// According to Anthropic docs: claude-haiku-4-5-20251001 should be used
 func TestModelSelection(t *testing.T) {
 	// Verify the model constant matches Anthropic's documented model identifier
-	// The code uses: anthropicsdk.ModelClaude3_5Haiku20241022
-	expectedModel := "claude-3-5-haiku-20241022"
-	if expectedModel != "claude-3-5-haiku-20241022" {
-		t.Errorf("Model should be claude-3-5-haiku-20241022, got %s", expectedModel)
+	// The code uses: anthropicsdk.string model ID claude-haiku-4-5-20251001
+	expectedModel := "claude-haiku-4-5-20251001"
+	if expectedModel != "claude-haiku-4-5-20251001" {
+		t.Errorf("Model should be claude-haiku-4-5-20251001, got %s", expectedModel)
 	}
 }
 
@@ -53,7 +53,7 @@ func TestRequestStructure(t *testing.T) {
 	// - Messages: []anthropicsdk.MessageParam with NewUserMessage(NewTextBlock(...))
 	// - System: []anthropicsdk.TextBlockParam
 	// - MaxTokens: 1024
-	// - Model: ModelClaude3_5Haiku20241022
+	// - Model: string model ID claude-haiku-4-5-20251001
 }
 
 // TestResponseHandling verifies response parsing matches Anthropic API spec

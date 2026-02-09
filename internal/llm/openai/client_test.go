@@ -54,14 +54,14 @@ func containsHelper(s, substr string) bool {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to OpenAI docs: gpt-4o-mini should be used (ChatModelGPT4oMini)
+// According to OpenAI docs: gpt-5-mini should be used
 func TestModelSelection(t *testing.T) {
 	// Verify the model constant is used correctly in the implementation
-	// The code uses: openaisdk.ChatModelGPT4oMini
+	// The code uses: openaisdk.ChatModel("gpt-5-mini")
 	// This matches OpenAI's documented model identifier
-	expectedModel := "gpt-4o-mini"
-	if expectedModel != "gpt-4o-mini" {
-		t.Errorf("Model should be gpt-4o-mini, got %s", expectedModel)
+	expectedModel := "gpt-5-mini"
+	if expectedModel != "gpt-5-mini" {
+		t.Errorf("Model should be gpt-5-mini, got %s", expectedModel)
 	}
 }
 
@@ -76,7 +76,7 @@ func TestRequestStructure(t *testing.T) {
 	// The code structure matches OpenAI's documented format:
 	// - SystemMessage for system prompt
 	// - UserMessage for user content
-	// - Model: ChatModelGPT4oMini
+	// - Model: gpt-5-mini
 
 	// This test verifies the structure is correct without making API calls
 	// The actual implementation in client.go follows OpenAI's documented structure

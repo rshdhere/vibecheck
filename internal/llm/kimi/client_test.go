@@ -36,11 +36,11 @@ func TestEndpointURL(t *testing.T) {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to Moonshot docs: moonshot-v1-auto is available
+// According to Moonshot docs: kimi-k2.5 is available
 func TestModelSelection(t *testing.T) {
-	expectedModel := "moonshot-v1-auto"
-	if expectedModel != "moonshot-v1-auto" {
-		t.Errorf("Model should be moonshot-v1-auto, got %s", expectedModel)
+	expectedModel := "kimi-k2.5"
+	if expectedModel != "kimi-k2.5" {
+		t.Errorf("Model should be kimi-k2.5, got %s", expectedModel)
 	}
 }
 
@@ -48,7 +48,7 @@ func TestModelSelection(t *testing.T) {
 // According to Moonshot docs: OpenAI-compatible format with model and messages
 func TestRequestStructure(t *testing.T) {
 	// Verify the implementation uses:
-	// 1. Model: "moonshot-v1-auto"
+	// 1. Model: "kimi-k2.5"
 	// 2. Messages array with role and content
 	// 3. System message with role "system"
 	// 4. User messages with role "user"

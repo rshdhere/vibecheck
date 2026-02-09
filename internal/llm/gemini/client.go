@@ -29,8 +29,8 @@ func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additio
 	}
 	defer client.Close()
 
-	// Using gemini-2.5-flash for best performance and cost-efficiency
-	model := client.GenerativeModel("gemini-2.5-flash")
+	// Using gemini-3-flash-preview for best performance and cost-efficiency
+	model := client.GenerativeModel("gemini-3-flash-preview")
 
 	// Configure model parameters for better responses
 	model.SetTemperature(0.7)
@@ -61,10 +61,7 @@ func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additio
 	// Gemini works better with system instructions set on the model
 	model.SystemInstruction = &genai.Content{
 		Parts: []genai.Part{
-			genai.Text(`You are a commit message generator. Analyze the git diff and generate a conventional commit message.
-Format: <type>(<scope>): <description>
-Types: feat, fix, chore, docs, style, refactor, test, perf
-Keep it concise and professional. Add 2-4 bullet points for details.`),
+			genai.Text(llm.GetSystemPrompt("gemini")),
 		},
 	}
 
