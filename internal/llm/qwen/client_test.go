@@ -36,11 +36,11 @@ func TestEndpointURL(t *testing.T) {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to Qwen docs: qwen-turbo is available
+// According to Qwen docs: qwen3-coder-plus is available
 func TestModelSelection(t *testing.T) {
-	expectedModel := "qwen-turbo"
-	if expectedModel != "qwen-turbo" {
-		t.Errorf("Model should be qwen-turbo, got %s", expectedModel)
+	expectedModel := "qwen3-coder-plus"
+	if expectedModel != "qwen3-coder-plus" {
+		t.Errorf("Model should be qwen3-coder-plus, got %s", expectedModel)
 	}
 }
 

@@ -60,11 +60,11 @@ func TestEndpointURL(t *testing.T) {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to Perplexity docs: sonar is the model name
+// According to Perplexity docs: sonar-pro is the model name
 func TestModelSelection(t *testing.T) {
-	expectedModel := "sonar"
-	if expectedModel != "sonar" {
-		t.Errorf("Model should be sonar, got %s", expectedModel)
+	expectedModel := "sonar-pro"
+	if expectedModel != "sonar-pro" {
+		t.Errorf("Model should be sonar-pro, got %s", expectedModel)
 	}
 }
 

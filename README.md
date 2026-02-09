@@ -264,15 +264,15 @@ export OLLAMA_HOST="http://localhost:11434"
 ```bash
 vibecheck commit
 
-vibecheck commit --provider openai    # GPT-4o-mini
-vibecheck commit --provider gemini    # Gemini 2.5 Flash
-vibecheck commit --provider anthropic # Claude 3.5 Haiku
-vibecheck commit --provider groq      # Llama 3.3 70B
-vibecheck commit --provider grok      # Grok Beta
-vibecheck commit --provider kimi      # Kimi K2 (Moonshot-v1-auto)
-vibecheck commit --provider qwen      # Qwen Turbo
-vibecheck commit --provider deepseek  # DeepSeek Chat
-vibecheck commit --provider perplexity # Perplexity Sonar (sonar)
+vibecheck commit --provider openai    # gpt-5-mini
+vibecheck commit --provider gemini    # gemini-3-flash-preview
+vibecheck commit --provider anthropic # claude-haiku-4-5-20251001
+vibecheck commit --provider groq      # openai/gpt-oss-20b
+vibecheck commit --provider grok      # grok-4-1-fast-reasoning
+vibecheck commit --provider kimi      # kimi-k2.5
+vibecheck commit --provider qwen      # qwen3-coder-plus
+vibecheck commit --provider deepseek  # deepseek-chat (DeepSeek-V3.2 alias)
+vibecheck commit --provider perplexity # sonar-pro
 vibecheck commit --provider ollama    # gpt-oss:20b (local)
 
 vibecheck commit --prompt "make sure to use 02 emoji's in my commit message"

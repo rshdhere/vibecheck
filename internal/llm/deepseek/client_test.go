@@ -39,7 +39,7 @@ func TestEndpointURL(t *testing.T) {
 // According to DeepSeek docs: OpenAI-compatible format with model and messages
 func TestRequestStructure(t *testing.T) {
 	// Verify the implementation uses:
-	// 1. Model: "deepseek-chat" (as per DeepSeek docs)
+	// 1. Model: "deepseek-chat" (DeepSeek v3.2 alias in the chat API)
 	// 2. Messages array with role and content
 	// 3. System message with role "system"
 	// 4. User messages with role "user"

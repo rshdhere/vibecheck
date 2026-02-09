@@ -105,3 +105,41 @@ func TestMockProvider(t *testing.T) {
 		t.Errorf("GenerateCommitMessage() = %v, want custom message", msg)
 	}
 }
+
+func TestGetSystemPrompt(t *testing.T) {
+	tests := []struct {
+		name       string
+		provider   string
+		wantPrompt string
+	}{
+		{
+			name:       "shared prompt provider",
+			provider:   "openai",
+			wantPrompt: sharedCommitMessageSystemPrompt,
+		},
+		{
+			name:       "gemini prompt provider",
+			provider:   "gemini",
+			wantPrompt: geminiCommitMessageSystemPrompt,
+		},
+		{
+			name:       "ollama prompt provider",
+			provider:   "ollama",
+			wantPrompt: ollamaCommitMessageSystemPrompt,
+		},
+		{
+			name:       "unknown provider falls back to shared prompt",
+			provider:   "unknown-provider",
+			wantPrompt: sharedCommitMessageSystemPrompt,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := GetSystemPrompt(tt.provider)
+			if got != tt.wantPrompt {
+				t.Errorf("GetSystemPrompt(%q) returned unexpected prompt", tt.provider)
+			}
+		})
+	}
+}

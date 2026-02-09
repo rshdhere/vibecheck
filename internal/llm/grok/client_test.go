@@ -36,11 +36,11 @@ func TestBaseURL(t *testing.T) {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to xAI docs: grok-beta is the model name
+// According to xAI docs: grok-4-1-fast-reasoning is the model name
 func TestModelSelection(t *testing.T) {
-	expectedModel := "grok-beta"
-	if expectedModel != "grok-beta" {
-		t.Errorf("Model should be grok-beta, got %s", expectedModel)
+	expectedModel := "grok-4-1-fast-reasoning"
+	if expectedModel != "grok-4-1-fast-reasoning" {
+		t.Errorf("Model should be grok-4-1-fast-reasoning, got %s", expectedModel)
 	}
 }
 

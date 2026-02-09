@@ -55,11 +55,11 @@ func containsHelper(s, substr string) bool {
 }
 
 // TestModelSelection verifies the correct model is used
-// According to Gemini docs: gemini-2.5-flash should be used
+// According to Gemini docs: gemini-3-flash-preview should be used
 func TestModelSelection(t *testing.T) {
-	expectedModel := "gemini-2.5-flash"
-	if expectedModel != "gemini-2.5-flash" {
-		t.Errorf("Model should be gemini-2.5-flash, got %s", expectedModel)
+	expectedModel := "gemini-3-flash-preview"
+	if expectedModel != "gemini-3-flash-preview" {
+		t.Errorf("Model should be gemini-3-flash-preview, got %s", expectedModel)
 	}
 }
 
