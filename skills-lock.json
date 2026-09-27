@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "commit-message": {
+      "source": "rshdhere/commit-message-skill",
+      "sourceType": "github",
+      "skillPath": "skills/commit-message/SKILL.md",
+      "computedHash": "43d3af838421557fdb8246a3b8a5d59e168c2b244eebad50eaae4810c16db307"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "computedHash": "4dd886b0196bf43729d954ae326016f2bd9f5f79d892500b407c33a753362f14"
+    }
+  }
+}
