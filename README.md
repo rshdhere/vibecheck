@@ -1,5 +1,6 @@
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11674/badge?v=1)](https://www.bestpractices.dev/projects/11674)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/rshdhere/vibecheck?sort=semver)
+[![GitHub downloads](https://img.shields.io/github/downloads/rshdhere/vibecheck/total)](https://github.com/rshdhere/vibecheck/releases)
 
 ![refine-vibe-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/b0c5e401-a48e-4e7b-9d18-1f2a6c396296)
 
