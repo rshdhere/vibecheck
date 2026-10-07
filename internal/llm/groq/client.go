@@ -68,5 +68,8 @@ The git diff is in the second next message.`),
 	if err != nil {
 		return "", fmt.Errorf("error while prompting to Groq: %w", err)
 	}
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no response choices from Groq")
+	}
 	return chatCompletion.Choices[0].Message.Content, nil
 }
