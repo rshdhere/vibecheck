@@ -2,103 +2,90 @@ package gemini
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
+
+	"google.golang.org/api/option"
 )
 
-// TestClientRegistration verifies the client is registered correctly
-func TestClientRegistration(t *testing.T) {
-	var _ interface {
-		GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error)
-	} = &client{}
+// isolate keeps the developer's real keys file and environment out of the test.
+func isolate(t *testing.T) {
+	t.Helper()
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv("GEMINI_API_KEY", "")
 }
 
-// TestAPIKeyValidation verifies API key validation
-// Note: Gemini SDK may not fail immediately on client creation, but will fail on API call
-func TestAPIKeyValidation(t *testing.T) {
-	c := &client{}
-	ctx := context.Background()
-
-	// The implementation checks for API key before creating client
-	// According to Gemini docs: API key should be validated before making requests
-	_, err := c.GenerateCommitMessage(ctx, "test diff", "")
-	// Error may occur at client creation or API call, both are valid
-	if err == nil {
-		// If no error, the test environment might have a key set
-		// This is acceptable - the important part is the code checks for the key
-		t.Log("No error returned - API key may be set in test environment")
-	} else {
-		// Verify error message mentions GEMINI_API_KEY or client creation
-		if err.Error() != "GEMINI_API_KEY environment variable not set" &&
-			!contains(err.Error(), "GEMINI_API_KEY") &&
-			!contains(err.Error(), "create gemini client") {
-			t.Logf("Error message: %q (may be from client creation, which is valid)", err.Error())
+// serve points the client at a local server that replies with status and body.
+func serve(t *testing.T, status int, body string) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.Contains(r.URL.Path, "gemini-2.5-flash") {
+			t.Errorf("path = %q, want it to target gemini-2.5-flash", r.URL.Path)
 		}
-	}
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) &&
-		(s == substr ||
-			(len(s) > len(substr) &&
-				(s[:len(substr)] == substr ||
-					s[len(s)-len(substr):] == substr ||
-					containsHelper(s, substr))))
-}
-
-func containsHelper(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
+		req, _ := io.ReadAll(r.Body)
+		if !strings.Contains(string(req), "the diff") {
+			t.Errorf("request body does not include the diff: %s", req)
 		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(status)
+		w.Write([]byte(body))
+	}))
+	t.Cleanup(srv.Close)
+
+	old := endpointOptions
+	endpointOptions = []option.ClientOption{option.WithEndpoint(srv.URL)}
+	t.Cleanup(func() { endpointOptions = old })
+}
+
+func TestGenerateCommitMessageMissingKey(t *testing.T) {
+	isolate(t)
+
+	_, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "")
+	if err == nil || err.Error() != "GEMINI_API_KEY environment variable not set" {
+		t.Fatalf("err = %v, want missing GEMINI_API_KEY error", err)
 	}
-	return false
 }
 
-// TestModelSelection verifies the correct model is used
-// According to Gemini docs: gemini-2.5-flash should be used
-func TestModelSelection(t *testing.T) {
-	expectedModel := "gemini-2.5-flash"
-	if expectedModel != "gemini-2.5-flash" {
-		t.Errorf("Model should be gemini-2.5-flash, got %s", expectedModel)
+func TestGenerateCommitMessageSuccess(t *testing.T) {
+	isolate(t)
+	t.Setenv("GEMINI_API_KEY", "test-key")
+	serve(t, http.StatusOK, `{"candidates":[{"content":{"role":"model","parts":[{"text":"feat: add thing"}]},"finishReason":"STOP"}]}`)
+
+	got, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "ctx")
+	if err != nil {
+		t.Fatalf("GenerateCommitMessage() error = %v", err)
+	}
+	if got != "feat: add thing" {
+		t.Errorf("GenerateCommitMessage() = %q, want %q", got, "feat: add thing")
 	}
 }
 
-// TestModelParameters verifies model parameters match Gemini API documentation
-// According to Gemini docs: Temperature, TopK, TopP, MaxOutputTokens are supported
-func TestModelParameters(t *testing.T) {
-	// Verify the implementation sets:
-	// - Temperature: 0.7 (as per code)
-	// - TopK: 40 (as per code)
-	// - TopP: 0.95 (as per code)
-	// - MaxOutputTokens: 1024 (as per code)
-	// These parameters match Gemini's documented API
-}
+func TestGenerateCommitMessageErrors(t *testing.T) {
+	tests := []struct {
+		name    string
+		status  int
+		body    string
+		wantErr string
+	}{
+		{"api error", http.StatusBadRequest, `{"error":{"code":400,"message":"bad request"}}`, "generate content"},
+		{"no candidates", http.StatusOK, `{"candidates":[]}`, "no candidates"},
+		{"unexpected finish reason", http.StatusOK, `{"candidates":[{"content":{"role":"model","parts":[{"text":"x"}]},"finishReason":"OTHER"}]}`, "finish reason"},
+		{"empty content", http.StatusOK, `{"candidates":[{"finishReason":"STOP"}]}`, "empty content"},
+	}
 
-// TestSafetySettings verifies safety settings match Gemini API documentation
-// According to Gemini docs: SafetySettings array with Category and Threshold
-func TestSafetySettings(t *testing.T) {
-	// Verify the implementation sets safety settings for:
-	// - HarmCategoryHarassment: HarmBlockOnlyHigh
-	// - HarmCategoryHateSpeech: HarmBlockOnlyHigh
-	// - HarmCategorySexuallyExplicit: HarmBlockOnlyHigh
-	// - HarmCategoryDangerousContent: HarmBlockOnlyHigh
-	// These match Gemini's documented safety settings API
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			t.Setenv("GEMINI_API_KEY", "test-key")
+			serve(t, tt.status, tt.body)
 
-// TestSystemInstruction verifies system instruction format matches Gemini API
-// According to Gemini docs: SystemInstruction with Content.Parts array
-func TestSystemInstruction(t *testing.T) {
-	// Verify the implementation uses:
-	// - model.SystemInstruction = &genai.Content{Parts: []genai.Part{genai.Text(...)}}
-	// This matches Gemini's documented SystemInstruction format
-}
-
-// TestResponseHandling verifies response parsing matches Gemini API spec
-// According to Gemini docs: response has Candidates array with Content.Parts
-func TestResponseHandling(t *testing.T) {
-	// Verify the implementation correctly accesses:
-	// - resp.Candidates[0].Content.Parts[0]
-	// - Checks for empty Candidates array
-	// - Checks FinishReason (Stop or MaxTokens)
-	// The code matches Gemini's documented response format
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
+	}
 }

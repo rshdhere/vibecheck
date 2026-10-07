@@ -11,6 +11,9 @@ import (
 	"google.golang.org/api/option"
 )
 
+// endpointOptions are appended to the client options; tests use them to target a local server.
+var endpointOptions []option.ClientOption
+
 type client struct{}
 
 func init() {
@@ -23,7 +26,7 @@ func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additio
 		return "", fmt.Errorf("GEMINI_API_KEY environment variable not set")
 	}
 
-	client, err := genai.NewClient(ctx, option.WithAPIKey(key))
+	client, err := genai.NewClient(ctx, append([]option.ClientOption{option.WithAPIKey(key)}, endpointOptions...)...)
 	if err != nil {
 		return "", fmt.Errorf("create gemini client: %w", err)
 	}

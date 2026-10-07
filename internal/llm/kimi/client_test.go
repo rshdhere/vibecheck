@@ -2,62 +2,143 @@ package kimi
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
-// TestClientRegistration verifies the client is registered correctly
-func TestClientRegistration(t *testing.T) {
-	var _ interface {
-		GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error)
-	} = &client{}
+const (
+	envVar    = "MOONSHOT_API_KEY"
+	wantModel = "moonshot-v1-auto"
+)
+
+// isolate keeps the developer's real keys file and environment out of the test.
+func isolate(t *testing.T) {
+	t.Helper()
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv(envVar, "")
 }
 
-// TestAPIKeyValidation verifies API key validation
-func TestAPIKeyValidation(t *testing.T) {
-	c := &client{}
-	ctx := context.Background()
-
-	_, err := c.GenerateCommitMessage(ctx, "test diff", "")
-	if err == nil {
-		t.Error("GenerateCommitMessage() should return error when API key is missing")
-	}
-	if err != nil && err.Error() != "MOONSHOT_API_KEY environment variable not set" {
-		t.Errorf("GenerateCommitMessage() error message = %q, want 'MOONSHOT_API_KEY environment variable not set'", err.Error())
-	}
+// serve points apiURL at a local server for the duration of the test.
+func serve(t *testing.T, h http.HandlerFunc) {
+	t.Helper()
+	srv := httptest.NewServer(h)
+	t.Cleanup(srv.Close)
+	setAPIURL(t, srv.URL)
 }
 
-// TestEndpointURL verifies the endpoint URL matches Moonshot Kimi API documentation
-// According to Moonshot docs: https://api.moonshot.cn/v1/chat/completions
-func TestEndpointURL(t *testing.T) {
-	expectedURL := "https://api.moonshot.cn/v1/chat/completions"
-	if expectedURL != "https://api.moonshot.cn/v1/chat/completions" {
-		t.Errorf("Endpoint URL should be https://api.moonshot.cn/v1/chat/completions, got %s", expectedURL)
-	}
+func setAPIURL(t *testing.T, url string) {
+	t.Helper()
+	old := apiURL
+	apiURL = url
+	t.Cleanup(func() { apiURL = old })
 }
 
-// TestModelSelection verifies the correct model is used
-// According to Moonshot docs: moonshot-v1-auto is available
-func TestModelSelection(t *testing.T) {
-	expectedModel := "moonshot-v1-auto"
-	if expectedModel != "moonshot-v1-auto" {
-		t.Errorf("Model should be moonshot-v1-auto, got %s", expectedModel)
+func TestGenerateCommitMessageMissingKey(t *testing.T) {
+	isolate(t)
+
+	_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+	if err == nil || err.Error() != envVar+" environment variable not set" {
+		t.Fatalf("err = %v, want missing %s error", err, envVar)
 	}
 }
 
-// TestRequestStructure verifies request structure matches Moonshot API spec
-// According to Moonshot docs: OpenAI-compatible format with model and messages
-func TestRequestStructure(t *testing.T) {
-	// Verify the implementation uses:
-	// 1. Model: "moonshot-v1-auto"
-	// 2. Messages array with role and content
-	// 3. System message with role "system"
-	// 4. User messages with role "user"
+func TestGenerateCommitMessageSuccess(t *testing.T) {
+	isolate(t)
+	t.Setenv(envVar, "test-key")
+
+	serve(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("method = %s, want POST", r.Method)
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer test-key" {
+			t.Errorf("Authorization = %q, want Bearer test-key", got)
+		}
+		if got := r.Header.Get("Content-Type"); got != "application/json" {
+			t.Errorf("Content-Type = %q, want application/json", got)
+		}
+		var req chatRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			t.Fatalf("decode request: %v", err)
+		}
+		if req.Model != wantModel {
+			t.Errorf("model = %q, want %q", req.Model, wantModel)
+		}
+		if len(req.Messages) != 3 || req.Messages[0].Role != "system" {
+			t.Fatalf("messages = %+v, want system + 2 user messages", req.Messages)
+		}
+		if !strings.Contains(req.Messages[1].Content, "extra context") {
+			t.Errorf("context message = %q, want it to include the user context", req.Messages[1].Content)
+		}
+		if req.Messages[2].Content != "the diff" {
+			t.Errorf("diff message = %q, want %q", req.Messages[2].Content, "the diff")
+		}
+		w.Write([]byte(`{"choices":[{"message":{"role":"assistant","content":"feat: add thing"}}]}`))
+	})
+
+	got, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "extra context")
+	if err != nil {
+		t.Fatalf("GenerateCommitMessage() error = %v", err)
+	}
+	if got != "feat: add thing" {
+		t.Errorf("GenerateCommitMessage() = %q, want %q", got, "feat: add thing")
+	}
 }
 
-// TestHeaders verifies HTTP headers match Moonshot API documentation
-// According to Moonshot docs: Authorization: Bearer <key>, Content-Type: application/json
-func TestHeaders(t *testing.T) {
-	// Verify headers are set correctly:
-	// - Content-Type: application/json
-	// - Authorization: Bearer <key>
+func TestGenerateCommitMessageResponseErrors(t *testing.T) {
+	tests := []struct {
+		name    string
+		status  int
+		body    string
+		wantErr string
+	}{
+		{"non-200 status", http.StatusUnauthorized, "bad key", "status 401: bad key"},
+		{"invalid json", http.StatusOK, "not json", "decode response"},
+		{"no choices", http.StatusOK, `{"choices":[]}`, "no response choices"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			t.Setenv(envVar, "test-key")
+			serve(t, func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(tt.status)
+				w.Write([]byte(tt.body))
+			})
+
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestGenerateCommitMessageRequestErrors(t *testing.T) {
+	closed := httptest.NewServer(http.NotFoundHandler())
+	closed.Close()
+
+	tests := []struct {
+		name    string
+		url     string
+		wantErr string
+	}{
+		{"invalid url", "://bad-url", "create request"},
+		{"unreachable server", closed.URL, "send request"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			t.Setenv(envVar, "test-key")
+			setAPIURL(t, tt.url)
+
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
+	}
 }

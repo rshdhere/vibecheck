@@ -2,90 +2,113 @@ package openai
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
-// TestClientRegistration verifies the client is registered correctly
-func TestClientRegistration(t *testing.T) {
-	// Verify client implements the Provider interface
-	var _ interface {
-		GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error)
-	} = &client{}
+const (
+	envVar    = "OPENAI_API_KEY"
+	wantModel = "gpt-4o-mini"
+)
+
+// isolate keeps the developer's real keys file and environment out of the test.
+func isolate(t *testing.T) {
+	t.Helper()
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv(envVar, "")
 }
 
-// TestAPIKeyValidation verifies API key validation follows OpenAI documentation
-// According to OpenAI docs: API key should be checked before making requests
-func TestAPIKeyValidation(t *testing.T) {
-	c := &client{}
-	ctx := context.Background()
+// point directs the SDK at url for the duration of the test.
+func point(t *testing.T, url string) {
+	t.Helper()
+	t.Setenv("OPENAI_BASE_URL", url)
+}
 
-	// Test that missing API key returns proper error message
-	// OpenAI docs specify: "OPENAI_API_KEY environment variable not set"
-	// Note: This test verifies the error message format matches OpenAI's documentation
-	// The actual API call may fail at different stages, but the key check happens first
-	_, err := c.GenerateCommitMessage(ctx, "test diff", "")
+// serve starts an OpenAI-compatible stand-in that replies with status and body.
+func serve(t *testing.T, status int, body string) {
+	t.Helper()
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || !strings.HasSuffix(r.URL.Path, "/chat/completions") {
+			t.Errorf("request = %s %s, want POST .../chat/completions", r.Method, r.URL.Path)
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer test-key" {
+			t.Errorf("Authorization = %q, want Bearer test-key", got)
+		}
+		var req struct {
+			Model    string `json:"model"`
+			Messages []struct {
+				Role    string `json:"role"`
+				Content string `json:"content"`
+			} `json:"messages"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			t.Fatalf("decode request: %v", err)
+		}
+		if req.Model != wantModel {
+			t.Errorf("model = %q, want %q", req.Model, wantModel)
+		}
+		if len(req.Messages) != 3 || req.Messages[0].Role != "system" || req.Messages[2].Content != "the diff" {
+			t.Errorf("messages = %+v, want system + context + diff", req.Messages)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(status)
+		w.Write([]byte(body))
+	}))
+	t.Cleanup(srv.Close)
+	point(t, srv.URL)
+}
+
+func completion(choices string) string {
+	return `{"id":"c1","object":"chat.completion","created":0,"model":"` + wantModel + `","choices":` + choices + `}`
+}
+
+func TestGenerateCommitMessageMissingKey(t *testing.T) {
+	isolate(t)
+
+	_, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "")
+	if err == nil || err.Error() != envVar+" environment variable not set" {
+		t.Fatalf("err = %v, want missing %s error", err, envVar)
+	}
+}
+
+func TestGenerateCommitMessageSuccess(t *testing.T) {
+	isolate(t)
+	t.Setenv(envVar, "test-key")
+	serve(t, http.StatusOK, completion(`[{"index":0,"finish_reason":"stop","message":{"role":"assistant","content":"feat: add thing"}}]`))
+
+	got, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "ctx")
 	if err != nil {
-		// Verify error message mentions OPENAI_API_KEY (may be from key check or API call)
-		if !contains(err.Error(), "OPENAI_API_KEY") && !contains(err.Error(), "open-ai") {
-			t.Logf("Error message: %q (may be from API call, which is valid)", err.Error())
-		}
-	} else {
-		// If no error, API key may be set in test environment
-		t.Log("No error - API key may be set in test environment")
+		t.Fatalf("GenerateCommitMessage() error = %v", err)
+	}
+	if got != "feat: add thing" {
+		t.Errorf("GenerateCommitMessage() = %q, want %q", got, "feat: add thing")
 	}
 }
 
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) &&
-		(s == substr ||
-			(len(s) > len(substr) &&
-				(s[:len(substr)] == substr ||
-					s[len(s)-len(substr):] == substr ||
-					containsHelper(s, substr))))
-}
-
-func containsHelper(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
-		}
+func TestGenerateCommitMessageErrors(t *testing.T) {
+	tests := []struct {
+		name    string
+		status  int
+		body    string
+		wantErr string
+	}{
+		{"api error", http.StatusBadRequest, `{"error":{"message":"bad request"}}`, "400"},
+		{"no choices", http.StatusOK, completion(`[]`), "no response choices"},
 	}
-	return false
-}
 
-// TestModelSelection verifies the correct model is used
-// According to OpenAI docs: gpt-4o-mini should be used (ChatModelGPT4oMini)
-func TestModelSelection(t *testing.T) {
-	// Verify the model constant is used correctly in the implementation
-	// The code uses: openaisdk.ChatModelGPT4oMini
-	// This matches OpenAI's documented model identifier
-	expectedModel := "gpt-4o-mini"
-	if expectedModel != "gpt-4o-mini" {
-		t.Errorf("Model should be gpt-4o-mini, got %s", expectedModel)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			t.Setenv(envVar, "test-key")
+			serve(t, tt.status, tt.body)
+
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
 	}
-}
-
-// TestRequestStructure verifies request structure matches OpenAI API spec
-// According to OpenAI docs: POST /v1/chat/completions with messages array
-func TestRequestStructure(t *testing.T) {
-	// Verify the implementation uses:
-	// 1. Messages array with SystemMessage and UserMessage
-	// 2. Model parameter
-	// 3. Correct message structure (role + content)
-
-	// The code structure matches OpenAI's documented format:
-	// - SystemMessage for system prompt
-	// - UserMessage for user content
-	// - Model: ChatModelGPT4oMini
-
-	// This test verifies the structure is correct without making API calls
-	// The actual implementation in client.go follows OpenAI's documented structure
-}
-
-// TestErrorHandling verifies error handling follows OpenAI documentation
-// According to OpenAI docs: errors should be wrapped with context
-func TestErrorHandling(t *testing.T) {
-	// Verify error messages follow OpenAI's error format
-	// The code uses: fmt.Sprintf("error while prompting to open-ai at: %v", err)
-	// This provides context as recommended in OpenAI docs
 }

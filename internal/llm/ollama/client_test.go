@@ -2,66 +2,109 @@ package ollama
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
-// TestClientRegistration verifies the client is registered correctly
-func TestClientRegistration(t *testing.T) {
-	var _ interface {
-		GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error)
-	} = &client{}
+// isolate keeps the developer's real keys file and environment out of the test.
+func isolate(t *testing.T) {
+	t.Helper()
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv("OLLAMA_HOST", "")
 }
 
-// TestDefaultHost verifies default host matches Ollama documentation
-// According to Ollama docs: Default host is http://localhost:11434
-func TestDefaultHost(t *testing.T) {
-	expectedDefault := "http://localhost:11434"
-	if expectedDefault != "http://localhost:11434" {
-		t.Errorf("Default host should be http://localhost:11434, got %s", expectedDefault)
+// serve starts a local Ollama stand-in and points OLLAMA_HOST at it.
+func serve(t *testing.T, h http.HandlerFunc) {
+	t.Helper()
+	srv := httptest.NewServer(h)
+	t.Cleanup(srv.Close)
+	t.Setenv("OLLAMA_HOST", srv.URL)
+}
+
+func TestGenerateCommitMessageSuccess(t *testing.T) {
+	isolate(t)
+	serve(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost || r.URL.Path != "/api/generate" {
+			t.Errorf("request = %s %s, want POST /api/generate", r.Method, r.URL.Path)
+		}
+		var req generateRequestBody
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			t.Fatalf("decode request: %v", err)
+		}
+		if req.Model != GitCommitMessage {
+			t.Errorf("model = %q, want %q", req.Model, GitCommitMessage)
+		}
+		if req.Stream {
+			t.Error("stream = true, want false")
+		}
+		if !strings.Contains(req.Prompt, "extra context") || !strings.Contains(req.Prompt, "the diff") {
+			t.Errorf("prompt does not include the context and the diff: %q", req.Prompt)
+		}
+		w.Write([]byte(`{"response":"feat: add thing"}`))
+	})
+
+	got, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "extra context")
+	if err != nil {
+		t.Fatalf("GenerateCommitMessage() error = %v", err)
+	}
+	if got != "feat: add thing" {
+		t.Errorf("GenerateCommitMessage() = %q, want %q", got, "feat: add thing")
 	}
 }
 
-// TestEndpointURL verifies the endpoint URL matches Ollama API documentation
-// According to Ollama docs: POST /api/generate
-func TestEndpointURL(t *testing.T) {
-	expectedPath := "/api/generate"
-	if expectedPath != "/api/generate" {
-		t.Errorf("Endpoint path should be /api/generate, got %s", expectedPath)
+func TestGenerateCommitMessageResponseErrors(t *testing.T) {
+	tests := []struct {
+		name    string
+		status  int
+		body    string
+		wantErr string
+	}{
+		{"non-200 status", http.StatusNotFound, `{"error":"model 'gpt-oss:20b' not found"}`, "status 404"},
+		{"invalid json", http.StatusOK, "not json", "decode"},
+		{"empty response", http.StatusOK, `{"response":""}`, "empty response"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			serve(t, func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(tt.status)
+				w.Write([]byte(tt.body))
+			})
+
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
 	}
 }
 
-// TestModelSelection verifies the correct model is used
-// According to Ollama docs: gpt-oss:20b is a valid model
-func TestModelSelection(t *testing.T) {
-	expectedModel := GitCommitMessage
-	if expectedModel != "gpt-oss:20b" {
-		t.Errorf("Model should be gpt-oss:20b, got %s", expectedModel)
+func TestGenerateCommitMessageRequestErrors(t *testing.T) {
+	closed := httptest.NewServer(http.NotFoundHandler())
+	closed.Close()
+
+	tests := []struct {
+		name    string
+		host    string
+		wantErr string
+	}{
+		{"invalid host", "://bad-host", "new req"},
+		{"unreachable host", closed.URL, "http do"},
 	}
-}
 
-// TestRequestStructure verifies request structure matches Ollama API spec
-// According to Ollama docs: POST /api/generate with model, prompt, stream, raw
-func TestRequestStructure(t *testing.T) {
-	// Verify the implementation uses:
-	// 1. Model: "gpt-oss:20b"
-	// 2. Prompt: string containing system prompt + user context + diff
-	// 3. Stream: false (as per code)
-	// 4. Raw: false (as per code)
-	// This matches Ollama's documented /api/generate endpoint format
-}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			t.Setenv("OLLAMA_HOST", tt.host)
 
-// TestResponseStructure verifies response parsing matches Ollama API spec
-// According to Ollama docs: Response has "response" field with generated text
-func TestResponseStructure(t *testing.T) {
-	// Verify the implementation correctly accesses:
-	// - resBody.Response
-	// - Checks for empty Response
-	// The code matches Ollama's documented response format
-}
-
-// TestErrorHandling verifies error handling for missing model
-// According to Ollama docs: Empty response indicates model not available
-func TestErrorHandling(t *testing.T) {
-	// Verify the implementation checks for empty response and returns
-	// appropriate error message about model availability
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
+	}
 }
