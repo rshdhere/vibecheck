@@ -282,7 +282,7 @@ var dashboardCmd = &cobra.Command{
 			height: 24,
 		}
 
-		p := tea.NewProgram(m, tea.WithAltScreen())
+		p := tea.NewProgram(m, append([]tea.ProgramOption{tea.WithAltScreen()}, teaOptions...)...)
 		if _, err := p.Run(); err != nil {
 			return fmt.Errorf("error running dashboard: %w", err)
 		}

@@ -13,6 +13,9 @@ import (
 	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
+// apiURL is the chat completions endpoint; tests point it at a local server.
+var apiURL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+
 type client struct{}
 
 func init() {
@@ -87,7 +90,7 @@ The git diff is in the second next message.`
 		return "", fmt.Errorf("marshal request: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions", bytes.NewBuffer(jsonData))
+	req, err := http.NewRequestWithContext(ctx, "POST", apiURL, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return "", fmt.Errorf("create request: %w", err)
 	}

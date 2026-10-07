@@ -25,9 +25,12 @@ import (
 	"github.com/rshdhere/vibecheck/internal/ui/banner"
 )
 
-const (
-	githubAPIURL = "https://api.github.com/repos/rshdhere/vibecheck/releases/latest"
-	repoURL      = "rshdhere/vibecheck"
+const repoURL = "rshdhere/vibecheck"
+
+// githubAPIURL and executablePath are variables so tests can substitute a local server and a scratch binary.
+var (
+	githubAPIURL   = "https://api.github.com/repos/rshdhere/vibecheck/releases/latest"
+	executablePath = os.Executable
 )
 
 type GitHubRelease struct {
@@ -45,7 +48,7 @@ var upgradeCmd = &cobra.Command{
 	Version: version,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Get current executable path
-		execPath, err := os.Executable()
+		execPath, err := executablePath()
 		if err != nil {
 			return fmt.Errorf("failed to get executable path: %w", err)
 		}

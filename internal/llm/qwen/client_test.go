@@ -2,53 +2,159 @@ package qwen
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
-// TestClientRegistration verifies the client is registered correctly
-func TestClientRegistration(t *testing.T) {
-	var _ interface {
-		GenerateCommitMessage(ctx context.Context, diff string, additionalContext string) (string, error)
-	} = &client{}
+const (
+	envVar    = "QWEN_API_KEY"
+	wantModel = "qwen-turbo"
+)
+
+// isolate keeps the developer's real keys file and environment out of the test.
+func isolate(t *testing.T) {
+	t.Helper()
+	t.Setenv("HOME", t.TempDir())
+	t.Setenv(envVar, "")
 }
 
-// TestAPIKeyValidation verifies API key validation
-func TestAPIKeyValidation(t *testing.T) {
-	c := &client{}
-	ctx := context.Background()
-
-	_, err := c.GenerateCommitMessage(ctx, "test diff", "")
-	if err == nil {
-		t.Error("GenerateCommitMessage() should return error when API key is missing")
-	}
-	if err != nil && err.Error() != "QWEN_API_KEY environment variable not set" {
-		t.Errorf("GenerateCommitMessage() error message = %q, want 'QWEN_API_KEY environment variable not set'", err.Error())
-	}
+// serve points apiURL at a local server for the duration of the test.
+func serve(t *testing.T, h http.HandlerFunc) {
+	t.Helper()
+	srv := httptest.NewServer(h)
+	t.Cleanup(srv.Close)
+	setAPIURL(t, srv.URL)
 }
 
-// TestEndpointURL verifies the endpoint URL matches Alibaba Qwen API documentation
-// According to Qwen docs: https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions
-func TestEndpointURL(t *testing.T) {
-	expectedURL := "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
-	if expectedURL != "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions" {
-		t.Errorf("Endpoint URL should be https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions, got %s", expectedURL)
-	}
+func setAPIURL(t *testing.T, url string) {
+	t.Helper()
+	old := apiURL
+	apiURL = url
+	t.Cleanup(func() { apiURL = old })
 }
 
-// TestModelSelection verifies the correct model is used
-// According to Qwen docs: qwen-turbo is available
-func TestModelSelection(t *testing.T) {
-	expectedModel := "qwen-turbo"
-	if expectedModel != "qwen-turbo" {
-		t.Errorf("Model should be qwen-turbo, got %s", expectedModel)
+func TestGenerateCommitMessageMissingKey(t *testing.T) {
+	isolate(t)
+
+	_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+	if err == nil || err.Error() != envVar+" environment variable not set" {
+		t.Fatalf("err = %v, want missing %s error", err, envVar)
 	}
 }
 
-// TestResponseStructure verifies response parsing handles Qwen's dual format
-// According to Qwen docs: Response may be in Choices or Output.Choices
-func TestResponseStructure(t *testing.T) {
-	// Verify the implementation checks both:
-	// - chatResp.Choices[0].Message.Content
-	// - chatResp.Output.Choices[0].Message.Content
-	// This matches Qwen's documented response format flexibility
+func TestGenerateCommitMessageSuccess(t *testing.T) {
+	isolate(t)
+	t.Setenv(envVar, "test-key")
+
+	serve(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			t.Errorf("method = %s, want POST", r.Method)
+		}
+		if got := r.Header.Get("Authorization"); got != "Bearer test-key" {
+			t.Errorf("Authorization = %q, want Bearer test-key", got)
+		}
+		if got := r.Header.Get("Content-Type"); got != "application/json" {
+			t.Errorf("Content-Type = %q, want application/json", got)
+		}
+		var req chatRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			t.Fatalf("decode request: %v", err)
+		}
+		if req.Model != wantModel {
+			t.Errorf("model = %q, want %q", req.Model, wantModel)
+		}
+		if len(req.Messages) != 3 || req.Messages[0].Role != "system" {
+			t.Fatalf("messages = %+v, want system + 2 user messages", req.Messages)
+		}
+		if !strings.Contains(req.Messages[1].Content, "extra context") {
+			t.Errorf("context message = %q, want it to include the user context", req.Messages[1].Content)
+		}
+		if req.Messages[2].Content != "the diff" {
+			t.Errorf("diff message = %q, want %q", req.Messages[2].Content, "the diff")
+		}
+		w.Write([]byte(`{"choices":[{"message":{"role":"assistant","content":"feat: add thing"}}]}`))
+	})
+
+	got, err := (&client{}).GenerateCommitMessage(context.Background(), "the diff", "extra context")
+	if err != nil {
+		t.Fatalf("GenerateCommitMessage() error = %v", err)
+	}
+	if got != "feat: add thing" {
+		t.Errorf("GenerateCommitMessage() = %q, want %q", got, "feat: add thing")
+	}
+}
+
+func TestGenerateCommitMessageDashScopeOutputFormat(t *testing.T) {
+	isolate(t)
+	t.Setenv(envVar, "test-key")
+	serve(t, func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`{"output":{"choices":[{"message":{"role":"assistant","content":"fix: handle nil"}}]}}`))
+	})
+
+	got, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+	if err != nil {
+		t.Fatalf("GenerateCommitMessage() error = %v", err)
+	}
+	if got != "fix: handle nil" {
+		t.Errorf("GenerateCommitMessage() = %q, want %q", got, "fix: handle nil")
+	}
+}
+
+func TestGenerateCommitMessageResponseErrors(t *testing.T) {
+	tests := []struct {
+		name    string
+		status  int
+		body    string
+		wantErr string
+	}{
+		{"non-200 status", http.StatusUnauthorized, "bad key", "status 401: bad key"},
+		{"invalid json", http.StatusOK, "not json", "decode response"},
+		{"no choices", http.StatusOK, `{"choices":[]}`, "no response choices"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			t.Setenv(envVar, "test-key")
+			serve(t, func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(tt.status)
+				w.Write([]byte(tt.body))
+			})
+
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestGenerateCommitMessageRequestErrors(t *testing.T) {
+	closed := httptest.NewServer(http.NotFoundHandler())
+	closed.Close()
+
+	tests := []struct {
+		name    string
+		url     string
+		wantErr string
+	}{
+		{"invalid url", "://bad-url", "create request"},
+		{"unreachable server", closed.URL, "send request"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			isolate(t)
+			t.Setenv(envVar, "test-key")
+			setAPIURL(t, tt.url)
+
+			_, err := (&client{}).GenerateCommitMessage(context.Background(), "diff", "")
+			if err == nil || !strings.Contains(err.Error(), tt.wantErr) {
+				t.Fatalf("err = %v, want it to contain %q", err, tt.wantErr)
+			}
+		})
+	}
 }

@@ -63,5 +63,8 @@ The git diff is in the second next message.`),
 	if err != nil {
 		return fmt.Sprintf("error while prompting to open-ai at: %v", err), err
 	}
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no response choices from OpenAI")
+	}
 	return chatCompletion.Choices[0].Message.Content, nil
 }

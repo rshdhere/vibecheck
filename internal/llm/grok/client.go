@@ -11,6 +11,9 @@ import (
 	"github.com/rshdhere/vibecheck/internal/llm"
 )
 
+// baseURL is the OpenAI-compatible API root; tests point it at a local server.
+var baseURL = "https://api.x.ai/v1"
+
 type client struct{}
 
 func init() {
@@ -26,7 +29,7 @@ func (c *client) GenerateCommitMessage(ctx context.Context, diff string, additio
 	// Grok uses OpenAI-compatible API
 	client := openaisdk.NewClient(
 		option.WithAPIKey(key),
-		option.WithBaseURL("https://api.x.ai/v1"),
+		option.WithBaseURL(baseURL),
 	)
 
 	// Using grok-beta model
@@ -67,6 +70,9 @@ The git diff is in the second next message.`),
 	})
 	if err != nil {
 		return "", fmt.Errorf("error while prompting to Grok: %w", err)
+	}
+	if len(chatCompletion.Choices) == 0 {
+		return "", fmt.Errorf("no response choices from Grok")
 	}
 	return chatCompletion.Choices[0].Message.Content, nil
 }

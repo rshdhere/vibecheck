@@ -15,21 +15,11 @@ jobs:
 
       - uses: actions/setup-go@7b8cf10d4e4a01d4992d18a89f4d7dc5a3e6d6f4 # v4.3.0
         with:
-          go-version: '1.22'
+          go-version-file: go.mod
 
       - name: Run tests with coverage
-        run: |
-          # Test core packages (exclude LLM clients that require API keys and UI-heavy cmd packages)
-          # Focus on testable internal packages
-          go test \
-            ./internal/config \
-            ./internal/keys \
-            ./internal/stats \
-            ./internal/git \
-            ./internal/llm \
-            ./internal/ui/banner \
-            ./internal/ui/notify \
-            -coverprofile=coverage.out
+        # Cover every package so the reported number matches `go test -cover ./...`.
+        run: go test -race -covermode=atomic -coverprofile=coverage.out ./...
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
