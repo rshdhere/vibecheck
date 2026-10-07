@@ -7,11 +7,15 @@ package cmd
 import (
 	"os"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
 
 // version will be set at build time via ldflags
 var version = "dev"
+
+// teaOptions are passed to every interactive program; tests use them to script input and capture output.
+var teaOptions []tea.ProgramOption
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

@@ -276,7 +276,7 @@ var modelsCmd = &cobra.Command{
 			currentModel: currentDefault,
 		}
 
-		p := tea.NewProgram(m)
+		p := tea.NewProgram(m, teaOptions...)
 		finalModel, err := p.Run()
 		if err != nil {
 			return fmt.Errorf("error running program: %w", err)

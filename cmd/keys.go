@@ -458,7 +458,7 @@ var keysCmd = &cobra.Command{
 			state:     "list",
 		}
 
-		p := tea.NewProgram(m)
+		p := tea.NewProgram(m, teaOptions...)
 		if _, err := p.Run(); err != nil {
 			return fmt.Errorf("error running program: %w", err)
 		}
