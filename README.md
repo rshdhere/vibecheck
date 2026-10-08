@@ -24,6 +24,12 @@ Prefer letting your coding agent write the commits? Install the [commit-message 
 npx skills add rshdhere/commit-message-skill
 ```
 
+Want the whole collection? Grab all of [my skills](https://github.com/rshdhere/raashed-skills) in one go:
+
+```bash
+curl -fsSL skills.raashed.com | bash
+```
+
 ## The Ultimate One Liner
 
 ```bash
