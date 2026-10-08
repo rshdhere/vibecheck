@@ -1,3 +1,4 @@
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go#standard-cli)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/11674/badge?v=1)](https://www.bestpractices.dev/projects/11674)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/rshdhere/vibecheck?sort=semver)
 
@@ -6,6 +7,8 @@
 
 
 A Cross-Platform Command-Line AI-tool for automating git commit messages by outsourcing them to LLMs. Supports multiple providers including OpenAI, Gemini, Anthropic, Groq, Grok, Kimi K2, Qwen, DeepSeek, Perplexity's Sonar, and Ollama.
+
+> vibecheck is featured in [Awesome Go](https://github.com/avelino/awesome-go#standard-cli), the 187K+ star curated list of Go projects, under Standard CLI.
 
 ## Installation
 
